@@ -327,11 +327,4 @@ export const certificates: Certificate[] = [
       label: "Black Friday",
     },
   },
-  {
-    id: 22,
-    type: "special",
-    title: "Тест",
-    description: "Тест",
-    price: 1,
-  },
 ];
