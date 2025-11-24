@@ -158,8 +158,9 @@ export default function CheckoutOverlay({
       const response = await createPaymentInvoice(invoiceRequest);
 
       // Redirect to payment page
-      if (response.data.invoiceUrl) {
-        window.location.href = response.data.invoiceUrl;
+      if (response.url) {
+        // window.location.href = response.data.invoiceUrl;
+        window.location.href = response.url;
       } else {
         throw new Error("No invoice URL received");
       }

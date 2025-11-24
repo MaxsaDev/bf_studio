@@ -3,30 +3,45 @@
  * Handles all payment-related API calls to BodyFactory backend
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://bf-club-delta.vercel.app";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://bf-club-delta.vercel.app";
 
 export interface CreateInvoiceRequest {
   amount: number;
   orderDescription: string;
   name: string;
   phone: string;
-  regular?: "client" | "none" | "once" | "daily" | "weekly" | "monthly" | "yearly" | "quarterly" | "halfyearly";
+  regular?:
+    | "client"
+    | "none"
+    | "once"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly"
+    | "quarterly"
+    | "halfyearly";
   regularCount?: number;
   userId?: string;
 }
 
+// export interface CreateInvoiceResponse {
+//   success: boolean;
+//   data: {
+//     invoiceUrl: string;
+//     url: string;
+//     qrCode: string;
+//     orderReference: string;
+//   };
+//   message: string;
+//   meta: {
+//     timestamp: string;
+//     requestId?: string;
+//   };
+// }
+
 export interface CreateInvoiceResponse {
-  success: boolean;
-  data: {
-    invoiceUrl: string;
-    qrCode: string;
-    orderReference: string;
-  };
-  message: string;
-  meta: {
-    timestamp: string;
-    requestId?: string;
-  };
+  url: string;
 }
 
 export interface ApiError {
@@ -49,7 +64,7 @@ export interface ApiError {
 export async function createPaymentInvoice(
   data: CreateInvoiceRequest
 ): Promise<CreateInvoiceResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/payments/invoice`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/payments`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -59,7 +74,7 @@ export async function createPaymentInvoice(
 
   const result = await response.json();
 
-  if (!response.ok || !result.success) {
+  if (!response.ok) {
     throw new Error(
       result.error?.message || "Failed to create payment invoice"
     );
