@@ -133,8 +133,8 @@ export default function CheckoutOverlay({
         price = variant.price;
         if (variant.discount) finalDiscount = variant.discount;
 
-        // Format: "Title (Variant Title)"
-        orderDescription = `${certificate.description} (${variant.title})`;
+        // Format: "Variant Title - Description"
+        orderDescription = `${variant.title} - ${certificate.description}`;
       } else {
         price = (certificate as any).price || (certificate as any).denomination;
       }
