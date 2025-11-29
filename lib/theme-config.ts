@@ -9,7 +9,7 @@
  * Theme Mode
  * Options: "light" | "dark"
  */
-export const THEME_MODE: "light" | "dark" = "dark";
+export const THEME_MODE: "light" | "dark" = "light";
 
 /**
  * Ambient Background Configuration

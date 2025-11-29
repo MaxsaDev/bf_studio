@@ -13,7 +13,6 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1200,
         sessions: 1,
-        discount: { percentage: 7, label: "Black Friday" },
       },
       {
         id: "basic",
@@ -21,7 +20,6 @@ export const certificates: Certificate[] = [
         title: "Курс (10 сеансів)",
         price: 12000,
         sessions: 10,
-        discount: { percentage: 15, label: "Black Friday" },
       },
     ],
   },
@@ -37,7 +35,6 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1200,
         sessions: 1,
-        discount: { percentage: 7, label: "Black Friday" },
       },
       {
         id: "express",
@@ -45,7 +42,6 @@ export const certificates: Certificate[] = [
         title: "Курс (6 сеансів)",
         price: 7200,
         sessions: 6,
-        discount: { percentage: 15, label: "Black Friday" },
       },
     ],
   },
@@ -56,10 +52,6 @@ export const certificates: Certificate[] = [
     description:
       "Сеанс парного масажу для 2 осіб на вибір: загальний оздоровчий, лімфодренажний, м'язове відновлення або розслабляючий масаж — при світлі свічок",
     price: 2800,
-    discount: {
-      percentage: 7,
-      label: "Black Friday",
-    },
   },
   {
     id: 4,
@@ -73,7 +65,6 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 950,
         sessions: 1,
-        discount: { percentage: 7, label: "Black Friday" },
       },
       {
         id: "course",
@@ -81,7 +72,6 @@ export const certificates: Certificate[] = [
         title: "Курс (6 сеансів)",
         price: 5700,
         sessions: 6,
-        discount: { percentage: 15, label: "Black Friday" },
       },
     ],
   },
@@ -97,7 +87,6 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1400,
         sessions: 1,
-        discount: { percentage: 7, label: "Black Friday" },
       },
       {
         id: "course",
@@ -105,7 +94,6 @@ export const certificates: Certificate[] = [
         title: "Курс (6 сеансів)",
         price: 8400,
         sessions: 6,
-        discount: { percentage: 15, label: "Black Friday" },
       },
     ],
   },
@@ -121,7 +109,6 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1150,
         sessions: 1,
-        discount: { percentage: 7, label: "Black Friday" },
       },
       {
         id: "course",
@@ -129,7 +116,6 @@ export const certificates: Certificate[] = [
         title: "Курс (6 сеансів)",
         price: 6900,
         sessions: 6,
-        discount: { percentage: 15, label: "Black Friday" },
       },
     ],
   },
@@ -145,7 +131,6 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1150,
         sessions: 1,
-        discount: { percentage: 7, label: "Black Friday" },
       },
       {
         id: "course",
@@ -153,7 +138,6 @@ export const certificates: Certificate[] = [
         title: "Курс (6 сеансів)",
         price: 6900,
         sessions: 6,
-        discount: { percentage: 15, label: "Black Friday" },
       },
     ],
   },
@@ -169,7 +153,6 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1150,
         sessions: 1,
-        discount: { percentage: 7, label: "Black Friday" },
       },
       {
         id: "course",
@@ -177,7 +160,6 @@ export const certificates: Certificate[] = [
         title: "Курс (6 сеансів)",
         price: 6900,
         sessions: 6,
-        discount: { percentage: 15, label: "Black Friday" },
       },
     ],
   },
@@ -187,10 +169,6 @@ export const certificates: Certificate[] = [
     denomination: 500,
     description: "Послуги масажу 500 грн",
     price: 500,
-    discount: {
-      percentage: 10,
-      label: "Black Friday",
-    },
   },
   {
     id: 10,
@@ -198,10 +176,6 @@ export const certificates: Certificate[] = [
     denomination: 1000,
     description: "Послуги масажу 1000 грн",
     price: 1000,
-    discount: {
-      percentage: 10,
-      label: "Black Friday",
-    },
   },
   {
     id: 11,
@@ -209,10 +183,6 @@ export const certificates: Certificate[] = [
     denomination: 2000,
     description: "Послуги масажу 2000 грн",
     price: 2000,
-    discount: {
-      percentage: 10,
-      label: "Black Friday",
-    },
   },
   {
     id: 12,
@@ -220,10 +190,6 @@ export const certificates: Certificate[] = [
     denomination: 3000,
     description: "Послуги масажу 3000 грн",
     price: 3000,
-    discount: {
-      percentage: 10,
-      label: "Black Friday",
-    },
   },
   {
     id: 13,
@@ -231,10 +197,6 @@ export const certificates: Certificate[] = [
     denomination: 5000,
     description: "Послуги масажу 5000 грн",
     price: 5000,
-    discount: {
-      percentage: 10,
-      label: "Black Friday",
-    },
   },
   {
     id: 14,
@@ -243,10 +205,6 @@ export const certificates: Certificate[] = [
     title: "Рубіновий",
     description: "Послуги масажу 2000 грн",
     price: 2000,
-    discount: {
-      percentage: 10,
-      label: "Black Friday",
-    },
   },
   {
     id: 15,
@@ -255,10 +213,6 @@ export const certificates: Certificate[] = [
     title: "Смарагдовий",
     description: "Послуги масажу 500 грн",
     price: 500,
-    discount: {
-      percentage: 10,
-      label: "Black Friday",
-    },
   },
   {
     id: 16,
@@ -267,10 +221,6 @@ export const certificates: Certificate[] = [
     title: "Сапфіровий",
     description: "Послуги масажу 1000 грн",
     price: 1000,
-    discount: {
-      percentage: 10,
-      label: "Black Friday",
-    },
   },
   {
     id: 17,
@@ -278,10 +228,6 @@ export const certificates: Certificate[] = [
     title: "Класичний масаж",
     description: "Майстер-клас з техніки класичного масажу",
     price: 3750,
-    discount: {
-      percentage: 15,
-      label: "Black Friday",
-    },
   },
   {
     id: 18,
@@ -289,10 +235,6 @@ export const certificates: Certificate[] = [
     title: "Релакс",
     description: "Майстер клас з техніки релакс-масажу",
     price: 4000,
-    discount: {
-      percentage: 15,
-      label: "Black Friday",
-    },
   },
   {
     id: 19,
@@ -300,10 +242,6 @@ export const certificates: Certificate[] = [
     title: "Масаж для пар",
     description: "Майстер-клас з масажу для пар",
     price: 5000,
-    discount: {
-      percentage: 15,
-      label: "Black Friday",
-    },
   },
   {
     id: 20,
@@ -311,10 +249,6 @@ export const certificates: Certificate[] = [
     title: "Антицелюлітний масаж",
     description: "Майстер-клас з техніки антицелюлітного масажу",
     price: 6000,
-    discount: {
-      percentage: 15,
-      label: "Black Friday",
-    },
   },
   {
     id: 21,
@@ -322,9 +256,5 @@ export const certificates: Certificate[] = [
     title: "Масажист",
     description: "Майстер-клас «Масажист»",
     price: 4950,
-    discount: {
-      percentage: 15,
-      label: "Black Friday",
-    },
   },
 ];

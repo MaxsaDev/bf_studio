@@ -13,14 +13,14 @@
  * Certificate card background image
  * Used across all certificate types
  */
-export const CERTIFICATE_IMAGE = "/bf_bf.jpg";
+export const CERTIFICATE_IMAGE = "/template_old.jpg";
 
 /**
  * Image overlay darkness
  * true = darker overlay for better text contrast
  * false = lighter overlay
  */
-export const CERTIFICATE_IMAGE_DARK_OVERLAY = true;
+export const CERTIFICATE_IMAGE_DARK_OVERLAY = false;
 
 /**
  * Maximum card width in pixels
