@@ -122,10 +122,8 @@ export default function AgreementPage() {
             </h2>
             <div className="space-y-4">
               <p>
-                1.1. Ця Угода є публічною офертою ФОП{" "}
-                <strong>(назва / ПІБ власника)</strong>, який діє під
-                торговельною маркою "Body Factory", щодо надання послуг масажу
-                на умовах, викладених нижче.
+                1.1. Ця Угода є публічною офертою <strong>Body Factory</strong>,
+                щодо надання послуг масажу на умовах, викладених нижче.
               </p>
               <p>
                 1.2. Сайт Продавця: <strong>bodyfactory.studio</strong>.
