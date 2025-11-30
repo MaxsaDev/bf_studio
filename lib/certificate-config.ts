@@ -13,7 +13,7 @@
  * Certificate card background image
  * Used across all certificate types
  */
-export const CERTIFICATE_IMAGE = "/template_old.jpg";
+export const CERTIFICATE_IMAGE = "/bf_card_white_template.jpg";
 
 /**
  * Image overlay darkness
