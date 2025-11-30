@@ -52,7 +52,7 @@ export const siteConfig = {
 
       // For special promotions (Black Friday, etc.)
       // Uncomment and modify these during promotions:
-      isPromotion: true,
+      isPromotion: false,
       promotionLabel: "Чорна п'ятниця 2025",
       promotionNote:
         "Строк отримання послуги — 6 місяців з дати оплати. Не забудьте записатися на сеанс завчасно, щоб гарантувати зручний для вас час.",
