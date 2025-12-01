@@ -77,7 +77,6 @@ export function CertificateCardVisual({
       style={{
         rotateX,
         rotateY,
-        transformStyle: "preserve-3d",
       }}
       className={cn(
         "relative aspect-1115/700 w-full rounded-xl overflow-hidden transition-shadow duration-300",
@@ -94,7 +93,7 @@ export function CertificateCardVisual({
         style={{ transform: "translateZ(0px)" }}
       >
         {/* Background Image */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 rounded-xl overflow-hidden">
           <Image
             src={imageSrc}
             alt="Certificate Background"
