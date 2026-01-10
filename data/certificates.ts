@@ -257,4 +257,25 @@ export const certificates: Certificate[] = [
     description: "Майстер-клас «Масажист»",
     price: 4950,
   },
+  {
+    id: 22,
+    type: "special",
+    title: "Загальний оздоровчий на 90 хв",
+    description: "Загальний оздоровчий масаж 90 хв",
+    price: 1600,
+  },
+  {
+    id: 23,
+    type: "special",
+    title: "Розслабляючий",
+    description: "Розслабляючий масаж",
+    price: 1050,
+  },
+  {
+    id: 24,
+    type: "special",
+    title: "Гарячим камінням",
+    description: "Масаж гарячим камінням",
+    price: 1350,
+  },
 ];
