@@ -76,7 +76,8 @@ export async function createPaymentInvoice(
 
   if (!response.ok) {
     throw new Error(
-      result.error?.message || "Failed to create payment invoice"
+      result.error?.message ||
+        "Не вдалося створити рахунок для оплати. Спробуйте ще раз."
     );
   }
 

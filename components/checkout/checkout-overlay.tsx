@@ -162,17 +162,21 @@ export default function CheckoutOverlay({
         // window.location.href = response.data.invoiceUrl;
         window.location.href = response.url;
       } else {
-        throw new Error("No invoice URL received");
+        throw new Error(
+          "Не вдалося отримати посилання для оплати. Спробуйте ще раз."
+        );
       }
     } catch (error) {
       console.error("Payment creation failed:", error);
       setIsSubmitting(false);
       // TODO: Show error message to user
-      alert(
-        error instanceof Error
+      const fallbackMessage =
+        "Не вдалося створити платіж. Спробуйте ще раз.";
+      const message =
+        error instanceof Error && error.message
           ? error.message
-          : "Не вдалося створити платіж. Спробуйте ще раз."
-      );
+          : fallbackMessage;
+      alert(message);
     }
   }
 
