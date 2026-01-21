@@ -169,7 +169,6 @@ export default function CheckoutOverlay({
     } catch (error) {
       console.error("Payment creation failed:", error);
       setIsSubmitting(false);
-      // TODO: Show error message to user
       const fallbackMessage =
         "Не вдалося створити платіж. Спробуйте ще раз.";
       const message =
