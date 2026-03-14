@@ -79,7 +79,7 @@ export const certificates: Certificate[] = [
     id: 5,
     type: "massage_course",
     title: "Розслабляючий комплекс",
-    description: "Розслабляючий масаж",
+    description: "Розслабляючий комплекс",
     variants: [
       {
         id: "session",
