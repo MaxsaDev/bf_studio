@@ -366,7 +366,7 @@ export default function CheckoutOverlay({
                             Оформлення
                           </h2>
                           <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
-                            Заповніть дані для отримання сертифікату
+                            Заповніть дані для отримання BFCard
                           </p>
                         </div>
 

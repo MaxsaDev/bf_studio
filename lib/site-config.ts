@@ -48,7 +48,7 @@ export const siteConfig = {
       displayText: "3 місяці",
 
       // Full note shown on success page
-      note: "Строк дії сертифіката — 3 місяці з дати оплати. Не забудьте записатися на сеанс завчасно, щоб гарантувати зручний для вас час.",
+      note: "Строк дії BFCard — 3 місяці з дати оплати. Не забудьте записатися на сеанс завчасно, щоб гарантувати зручний для вас час.",
 
       // For special promotions (Black Friday, etc.)
       // Uncomment and modify these during promotions:
