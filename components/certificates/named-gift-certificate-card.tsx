@@ -18,12 +18,14 @@ interface Props {
   certificate: NamedGiftCertificate;
   onSelect?: (certificate: NamedGiftCertificate) => void;
   isActive?: boolean;
+  imagePriority?: boolean;
 }
 
 export function NamedGiftCertificateCard({
   certificate,
   onSelect,
   isActive = true,
+  imagePriority = false,
 }: Props) {
   const themeName = extractThemeName(certificate.title);
   const themeColor = getNamedCertificateColor(themeName);
@@ -49,10 +51,11 @@ export function NamedGiftCertificateCard({
         layoutId={`card-visual-${certificate.id}`}
         imageSrc={CERTIFICATE_IMAGE}
         isDark={CERTIFICATE_IMAGE_DARK_OVERLAY}
+        imagePriority={imagePriority}
       />
 
       <CertificateCardControls
-        price={certificate.price}
+        price={certificate.denomination}
         discount={certificate.discount}
         onBuy={() => onSelect?.(certificate)}
         isActive={isActive}

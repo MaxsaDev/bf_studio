@@ -16,12 +16,14 @@ interface Props {
   certificate: GiftCertificate;
   onSelect?: (certificate: GiftCertificate) => void;
   isActive?: boolean;
+  imagePriority?: boolean;
 }
 
 export function GiftCertificateCard({
   certificate,
   onSelect,
   isActive = true,
+  imagePriority = false,
 }: Props) {
   return (
     <div className={cn("w-full mx-auto group perspective-1000")} style={{ maxWidth: CERTIFICATE_MAX_WIDTH }}>
@@ -39,10 +41,11 @@ export function GiftCertificateCard({
         layoutId={`card-visual-${certificate.id}`}
         imageSrc={CERTIFICATE_IMAGE}
         isDark={CERTIFICATE_IMAGE_DARK_OVERLAY}
+        imagePriority={imagePriority}
       />
 
       <CertificateCardControls
-        price={certificate.price}
+        price={certificate.denomination}
         discount={certificate.discount}
         onBuy={() => onSelect?.(certificate)}
         isActive={isActive}

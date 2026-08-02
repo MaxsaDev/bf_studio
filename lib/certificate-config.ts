@@ -108,9 +108,8 @@ export function getNamedCertificateColor(
 }
 
 /**
- * Extract theme name from certificate description
+ * Theme name for named certificates is simply the title.
  */
 export function extractThemeName(title: string): string {
-  const themeMatch = title.match(/(.*?)$/);
-  return themeMatch ? themeMatch[1] : "Premium";
+  return title.trim() || "Premium";
 }

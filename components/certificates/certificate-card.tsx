@@ -11,6 +11,7 @@ interface CertificateCardProps {
   certificate: Certificate;
   onSelect?: (certificate: Certificate, variantId?: string) => void;
   isActive?: boolean;
+  imagePriority?: boolean;
 }
 
 export function CertificateCard(props: CertificateCardProps) {

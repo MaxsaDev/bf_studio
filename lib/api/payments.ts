@@ -25,21 +25,6 @@ export interface CreateInvoiceRequest {
   userId?: string;
 }
 
-// export interface CreateInvoiceResponse {
-//   success: boolean;
-//   data: {
-//     invoiceUrl: string;
-//     url: string;
-//     qrCode: string;
-//     orderReference: string;
-//   };
-//   message: string;
-//   meta: {
-//     timestamp: string;
-//     requestId?: string;
-//   };
-// }
-
 export interface CreateInvoiceResponse {
   url: string;
 }
@@ -49,7 +34,7 @@ export interface ApiError {
   error: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
     contact?: string;
   };
   meta: {
@@ -82,25 +67,4 @@ export async function createPaymentInvoice(
   }
 
   return result;
-}
-
-/**
- * Format phone number to international format (+380XXXXXXXXX)
- */
-export function formatPhoneForAPI(phone: string): string {
-  // Remove all non-digits
-  const digits = phone.replace(/\D/g, "");
-
-  // If starts with 38, keep it
-  if (digits.startsWith("38")) {
-    return `+${digits}`;
-  }
-
-  // If starts with 0, replace with 380
-  if (digits.startsWith("0")) {
-    return `+38${digits}`;
-  }
-
-  // Otherwise assume it's already correct or add +38
-  return `+38${digits}`;
 }

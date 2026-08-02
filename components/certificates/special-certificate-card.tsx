@@ -16,12 +16,14 @@ interface Props {
   certificate: SpecialCertificate;
   onSelect?: (certificate: SpecialCertificate) => void;
   isActive?: boolean;
+  imagePriority?: boolean;
 }
 
 export function SpecialCertificateCard({
   certificate,
   onSelect,
   isActive = true,
+  imagePriority = false,
 }: Props) {
   return (
     <div
@@ -35,6 +37,7 @@ export function SpecialCertificateCard({
         layoutId={`card-visual-${certificate.id}`}
         imageSrc={CERTIFICATE_IMAGE}
         isDark={CERTIFICATE_IMAGE_DARK_OVERLAY}
+        imagePriority={imagePriority}
       />
       <CertificateCardControls
         price={certificate.price}

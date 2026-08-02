@@ -4,6 +4,7 @@ import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { THEME_MODE } from "@/lib/theme-config";
+import { StructuredData } from "@/components/seo/structured-data";
 
 const evolventa = localFont({
   src: [
@@ -56,6 +57,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Body Factory Studio | Premium",
     description: "Оберіть ідеальний подарунок на масаж у Body Factory",
+    locale: "uk_UA",
+    type: "website",
+    images: [
+      {
+        url: "/bf_card_white_template.jpg",
+        width: 1115,
+        height: 700,
+        alt: "Body Factory подарунковий сертифікат",
+      },
+    ],
   },
   manifest: "/site.webmanifest",
 };
@@ -66,7 +77,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="uk" suppressHydrationWarning>
+      <head>
+        <StructuredData />
+      </head>
       <body
         className={`${evolventa.variable} ${playfair.variable} antialiased font-sans selection:bg-stone-200 dark:selection:bg-stone-800`}
       >

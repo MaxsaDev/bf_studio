@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface MarqueeProps {
   text: string;
@@ -16,6 +16,8 @@ export function Marquee({
   speed = 30,
   className,
 }: MarqueeProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <div
       className={cn(
@@ -25,9 +27,13 @@ export function Marquee({
     >
       <motion.div
         className="flex gap-12"
-        animate={{
-          x: direction === "left" ? ["0%", "-50%"] : ["-50%", "0%"],
-        }}
+        animate={
+          shouldReduceMotion
+            ? undefined
+            : {
+                x: direction === "left" ? ["0%", "-50%"] : ["-50%", "0%"],
+              }
+        }
         transition={{
           duration: speed,
           ease: "linear",

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
@@ -19,35 +19,17 @@ const CertificateCard = dynamic(
 import { cn } from "@/lib/utils";
 
 interface SectionCarouselProps {
-  title?: string; // Optional now as we use external header
   certificates: Certificate[];
-  onSelect?: (
-    certificate: Certificate,
-    mode?: "fullCourse" | "session"
-  ) => void;
+  onSelect?: (certificate: Certificate, variantId?: string) => void;
 }
 
 const DRAG_BUFFER = 50;
 
 export function SectionCarousel({
-  title,
   certificates,
   onSelect,
 }: SectionCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const handleDragEnd = (e: any, { offset }: any) => {
-    const swipe = Math.abs(offset.x) > DRAG_BUFFER;
-    const dir = offset.x < 0 ? 1 : -1;
-
-    if (swipe) {
-      if (dir === 1) {
-        scrollNext();
-      } else {
-        scrollPrev();
-      }
-    }
-  };
 
   const scrollPrev = useCallback(() => {
     setActiveIndex(
@@ -59,17 +41,33 @@ export function SectionCarousel({
     setActiveIndex((prev) => (prev + 1) % certificates.length);
   }, [certificates.length]);
 
+  const handleDragEnd = useCallback(
+    (_e: MouseEvent | TouchEvent | PointerEvent, { offset }: PanInfo) => {
+      const swipe = Math.abs(offset.x) > DRAG_BUFFER;
+      if (!swipe) return;
+      if (offset.x < 0) {
+        scrollNext();
+      } else {
+        scrollPrev();
+      }
+    },
+    [scrollNext, scrollPrev]
+  );
+
   return (
     <div
       className="w-full py-0 md:py-4 space-y-8 overflow-hidden relative focus-visible:outline-none group/carousel"
       tabIndex={0}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Сертифікати"
       onKeyDown={(e) => {
         if (e.key === "ArrowLeft") scrollPrev();
         if (e.key === "ArrowRight") scrollNext();
       }}
     >
-      {/* Navigation Controls - Re-positioned */}
-      <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 z-60 pointer-events-none flex justify-between px-2 md:px-12 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300">
+      {/* Navigation Controls — hidden on mobile (dots + swipe there), always visible on desktop */}
+      <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 z-60 pointer-events-none hidden md:flex justify-between px-2 md:px-12">
         <Button
           variant="ghost"
           size="icon"
@@ -90,7 +88,7 @@ export function SectionCarousel({
         </Button>
       </div>
 
-      <div className="relative h-[600px] sm:h-[750px] w-full flex items-center justify-center perspective-1000">
+      <div className="relative h-[min(600px,80svh)] sm:h-[750px] w-full flex items-center justify-center perspective-1000">
         <AnimatePresence mode="popLayout">
           {certificates.map((cert, i) => {
             const length = certificates.length;
@@ -141,11 +139,8 @@ export function SectionCarousel({
 interface CardItemProps {
   certificate: Certificate;
   offset: number;
-  onSelect?: (
-    certificate: Certificate,
-    mode?: "fullCourse" | "session"
-  ) => void;
-  onDragEnd: (e: any, info: any) => void;
+  onSelect?: (certificate: Certificate, variantId?: string) => void;
+  onDragEnd: (e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => void;
   isActive: boolean;
 }
 
@@ -196,14 +191,15 @@ const CardItem = React.memo(function CardItem({
       style={{
         transformStyle: "preserve-3d",
       }}
+      aria-hidden={!isActive}
+      inert={!isActive}
     >
       {/* Pass isActive down to control controls visibility */}
       <CertificateCard
         certificate={certificate}
-        onSelect={(certificate, variantId) =>
-          onSelect?.(certificate, variantId as "fullCourse" | "session")
-        }
+        onSelect={onSelect}
         isActive={isActive}
+        imagePriority={offset === 0}
       />
     </motion.div>
   );

@@ -1,100 +1,131 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { AMBIENT_CONFIG } from "@/lib/theme-config";
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { AMBIENT_CONFIG, AmbientIcon } from "@/lib/theme-config";
 
-function FloatingParticle({ delay = 0, xRange = 50, yRange = 50, size = 4 }) {
+/**
+ * Random values are generated ONCE (in the mount effect) and stored in
+ * state, so re-renders never teleport particles or restart animations.
+ */
+interface ParticleConfig {
+  left: string;
+  top: string;
+  size: number;
+  xRange: number;
+  yRange: number;
+  duration: number;
+  delay: number;
+}
+
+interface IconConfig extends AmbientIcon {
+  left: string;
+  top: string;
+  yMove: number;
+  xMove: number;
+  duration: number;
+  delay: number;
+  depth: "back" | "front";
+}
+
+function createParticle(index: number): ParticleConfig {
+  return {
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    size: Math.random() > 0.8 ? 5 : 3,
+    xRange: Math.random() * 100 - 50,
+    yRange: Math.random() * 100 - 50,
+    duration: 10 + Math.random() * 10,
+    delay: index * 0.8,
+  };
+}
+
+function createIcon(
+  icon: AmbientIcon,
+  index: number,
+  depth: "back" | "front"
+): IconConfig {
+  return {
+    ...icon,
+    left: `${Math.random() * 90 + 5}%`,
+    top: `${Math.random() * 90 + 5}%`,
+    yMove: -50 - Math.random() * 100,
+    xMove: (Math.random() - 0.5) * 100,
+    duration:
+      depth === "front" ? 20 + Math.random() * 10 : 35 + Math.random() * 15,
+    delay: depth === "front" ? index * 5 + 2 : index * 3,
+    depth,
+  };
+}
+
+function FloatingParticle({ config }: { config: ParticleConfig }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{
         opacity: [0.3, 0.6, 0.3],
-        y: [0, -yRange, 0],
-        x: [0, xRange, 0],
+        y: [0, -config.yRange, 0],
+        x: [0, config.xRange, 0],
       }}
       transition={{
-        duration: 10 + Math.random() * 10,
+        duration: config.duration,
         repeat: Infinity,
         ease: "easeInOut",
-        delay: delay,
+        delay: config.delay,
       }}
       className="absolute rounded-full bg-stone-400/30 dark:bg-stone-500/30 blur-[1px]"
       style={{
-        width: size,
-        height: size,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
+        width: config.size,
+        height: config.size,
+        left: config.left,
+        top: config.top,
       }}
     />
   );
 }
 
-function FloatingIcon({
-  delay = 0,
-  src,
-  emoji,
-  size = 24,
-  depth = "back", // "back" or "front"
-}: {
-  delay?: number;
-  src?: string;
-  emoji?: string;
-  size?: number;
-  depth?: "back" | "front";
-}) {
-  // Randomize movement slightly
-  const yMove = -50 - Math.random() * 100;
-  const xMove = (Math.random() - 0.5) * 100;
-
-  // Front layer moves faster for parallax effect
-  const duration =
-    depth === "front" ? 20 + Math.random() * 10 : 35 + Math.random() * 15;
-  const scale = depth === "front" ? [0.8, 1.2, 0.8] : 0.8;
+function FloatingIcon({ config }: { config: IconConfig }) {
+  const isFront = config.depth === "front";
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: depth === "front" ? 0.8 : 0.6 }}
+      initial={{ opacity: 0, scale: isFront ? 0.8 : 0.6 }}
       animate={{
-        opacity: depth === "front" ? [0, 0.8, 0] : [0, 0.4, 0],
-        y: [0, yMove, 0],
-        x: [0, xMove, 0],
+        opacity: isFront ? [0, 0.8, 0] : [0, 0.4, 0],
+        y: [0, config.yMove, 0],
+        x: [0, config.xMove, 0],
         rotate: [0, 10, -10, 0],
-        scale: scale,
+        scale: isFront ? [0.8, 1.2, 0.8] : 0.8,
       }}
       transition={{
-        duration: duration,
+        duration: config.duration,
         repeat: Infinity,
         ease: "easeInOut",
-        delay: delay,
+        delay: config.delay,
       }}
       className={`absolute pointer-events-none select-none mix-blend-multiply dark:mix-blend-screen ${
-        depth === "front" ? "z-50" : "z-0"
+        isFront ? "z-50" : "z-0"
       }`}
       style={{
-        left: `${Math.random() * 90 + 5}%`,
-        top: `${Math.random() * 90 + 5}%`,
-        filter: depth === "front" ? "blur(0px)" : "blur(1.5px)", // Blur background items
+        left: config.left,
+        top: config.top,
+        filter: isFront ? "blur(0px)" : "blur(1.5px)",
       }}
     >
-      {src ? (
+      {config.src ? (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
-          src={src}
+          src={config.src}
           alt=""
-          style={{ width: size, height: "auto" }}
-          className={
-            depth === "front" ? "opacity-90 drop-shadow-lg" : "opacity-60"
-          }
+          style={{ width: config.size, height: "auto" }}
+          className={isFront ? "opacity-90 drop-shadow-lg" : "opacity-60"}
         />
       ) : (
         <span
-          style={{ fontSize: size }}
-          className={
-            depth === "front" ? "opacity-80 drop-shadow-md" : "opacity-50"
-          }
+          style={{ fontSize: config.size }}
+          className={isFront ? "opacity-80 drop-shadow-md" : "opacity-50"}
         >
-          {emoji}
+          {config.emoji}
         </span>
       )}
     </motion.div>
@@ -102,26 +133,39 @@ function FloatingIcon({
 }
 
 export function AmbientBackground() {
-  // Hydration safe random particles
-  const [particles, setParticles] = useState<number[]>([]);
-  const [bgIcons, setBgIcons] = useState<any[]>([]);
-  const [fgIcons, setFgIcons] = useState<any[]>([]);
+  const shouldReduceMotion = useReducedMotion();
+
+  // Hydration-safe: configs generated client-side after mount
+  const [particles, setParticles] = useState<ParticleConfig[]>([]);
+  const [bgIcons, setBgIcons] = useState<IconConfig[]>([]);
+  const [fgIcons, setFgIcons] = useState<IconConfig[]>([]);
 
   useEffect(() => {
-    // Reduce particle count for performance
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const particleCount = isMobile
-      ? AMBIENT_CONFIG.particles.mobile
-      : AMBIENT_CONFIG.particles.desktop;
+    if (shouldReduceMotion) return;
 
-    setParticles(Array.from({ length: particleCount }, (_, i) => i));
+    const frame = requestAnimationFrame(() => {
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const particleCount = isMobile
+        ? AMBIENT_CONFIG.particles.mobile
+        : AMBIENT_CONFIG.particles.desktop;
 
-    // Background layer (slower, blurrier)
-    setBgIcons(AMBIENT_CONFIG.backgroundIcons);
+      setParticles(
+        Array.from({ length: particleCount }, (_, i) => createParticle(i))
+      );
+      setBgIcons(
+        AMBIENT_CONFIG.backgroundIcons.map((icon, i) =>
+          createIcon(icon, i, "back")
+        )
+      );
+      setFgIcons(
+        AMBIENT_CONFIG.foregroundIcons.map((icon, i) =>
+          createIcon(icon, i, "front")
+        )
+      );
+    });
 
-    // Foreground layer (faster, sharper, larger)
-    setFgIcons(AMBIENT_CONFIG.foregroundIcons);
-  }, []);
+    return () => cancelAnimationFrame(frame);
+  }, [shouldReduceMotion]);
 
   return (
     <>
@@ -148,28 +192,15 @@ export function AmbientBackground() {
 
         {/* Floating "Stuff" - Particles/Dust */}
         <div className="absolute inset-0 z-5">
-          {particles.map((i) => (
-            <FloatingParticle
-              key={`p-${i}`}
-              delay={i * 0.8}
-              size={Math.random() > 0.8 ? 5 : 3}
-              xRange={Math.random() * 100 - 50}
-              yRange={Math.random() * 100 - 50}
-            />
+          {particles.map((config, i) => (
+            <FloatingParticle key={`p-${i}`} config={config} />
           ))}
         </div>
 
         {/* Background Floating Icons */}
         <div className="absolute inset-0 z-5">
-          {bgIcons.map((icon, i) => (
-            <FloatingIcon
-              key={`bg-icon-${i}`}
-              delay={i * 3}
-              src={icon.src}
-              emoji={icon.emoji}
-              size={icon.size}
-              depth="back"
-            />
+          {bgIcons.map((config, i) => (
+            <FloatingIcon key={`bg-icon-${i}`} config={config} />
           ))}
         </div>
 
@@ -197,15 +228,8 @@ export function AmbientBackground() {
 
       {/* FOREGROUND LAYER - Floats above content */}
       <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
-        {fgIcons.map((icon, i) => (
-          <FloatingIcon
-            key={`fg-icon-${i}`}
-            delay={i * 5 + 2}
-            src={icon.src}
-            emoji={icon.emoji}
-            size={icon.size}
-            depth="front"
-          />
+        {fgIcons.map((config, i) => (
+          <FloatingIcon key={`fg-icon-${i}`} config={config} />
         ))}
       </div>
     </>

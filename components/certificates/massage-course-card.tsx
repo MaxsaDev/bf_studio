@@ -15,12 +15,14 @@ interface Props {
   certificate: MassageCourseCertificate;
   onSelect?: (certificate: MassageCourseCertificate, variantId: string) => void;
   isActive?: boolean;
+  imagePriority?: boolean;
 }
 
 export function MassageCourseCard({
   certificate,
   onSelect,
   isActive = true,
+  imagePriority = false,
 }: Props) {
   // Default to the last variant (usually the full course/biggest option)
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
@@ -46,6 +48,7 @@ export function MassageCourseCard({
         layoutId={`card-visual-${certificate.id}`}
         imageSrc={CERTIFICATE_IMAGE}
         isDark={CERTIFICATE_IMAGE_DARK_OVERLAY}
+        imagePriority={imagePriority}
       />
 
       <CertificateCardControls

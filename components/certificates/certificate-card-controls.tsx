@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Discount, CertificateVariant } from "@/types/certificate";
+import { applyDiscount, formatDiscountEndDate } from "@/lib/pricing";
 
 interface CertificateCardControlsProps {
   price: number;
@@ -26,10 +27,10 @@ export function CertificateCardControls({
   className,
   isActive = true,
 }: CertificateCardControlsProps) {
-  // Calculate discounted price if discount exists
-  const finalPrice = discount
-    ? Math.round(price * (1 - discount.percentage / 100))
-    : price;
+  const finalPrice = applyDiscount(price, discount);
+  const discountDeadline = discount?.endDate
+    ? formatDiscountEndDate(discount.endDate)
+    : null;
 
   return (
     <div
@@ -86,8 +87,13 @@ export function CertificateCardControls({
             <div className="flex items-center gap-2 text-sm font-medium text-stone-500 dark:text-stone-400 line-through decoration-stone-400/50 dark:decoration-stone-500/50">
               <span>{price} ₴</span>
               <span className="no-underline text-xs px-1.5 py-0.5 rounded-sm bg-stone-200 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold">
-                -{discount.percentage}%
+                {discount.label ?? `-${discount.percentage}%`}
               </span>
+              {discountDeadline && (
+                <span className="no-underline text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wide">
+                  {discountDeadline}
+                </span>
+              )}
             </div>
           )}
           <div className="flex items-baseline gap-2">

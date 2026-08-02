@@ -189,35 +189,30 @@ export const certificates: Certificate[] = [
     type: "gift_certificate",
     denomination: 500,
     description: "Послуги масажу 500 грн",
-    price: 500,
   },
   {
     id: 10,
     type: "gift_certificate",
     denomination: 1000,
     description: "Послуги масажу 1000 грн",
-    price: 1000,
   },
   {
     id: 11,
     type: "gift_certificate",
     denomination: 2000,
     description: "Послуги масажу 2000 грн",
-    price: 2000,
   },
   {
     id: 12,
     type: "gift_certificate",
     denomination: 3000,
     description: "Послуги масажу 3000 грн",
-    price: 3000,
   },
   {
     id: 13,
     type: "gift_certificate",
     denomination: 5000,
     description: "Послуги масажу 5000 грн",
-    price: 5000,
   },
   {
     id: 14,
@@ -225,7 +220,6 @@ export const certificates: Certificate[] = [
     denomination: 2000,
     title: "Рубіновий",
     description: "Послуги масажу 2000 грн",
-    price: 2000,
   },
   {
     id: 15,
@@ -233,7 +227,6 @@ export const certificates: Certificate[] = [
     denomination: 500,
     title: "Смарагдовий",
     description: "Послуги масажу 500 грн",
-    price: 500,
   },
   {
     id: 16,
@@ -241,7 +234,6 @@ export const certificates: Certificate[] = [
     denomination: 1000,
     title: "Сапфіровий",
     description: "Послуги масажу 1000 грн",
-    price: 1000,
   },
   {
     id: 17,

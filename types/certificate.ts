@@ -36,15 +36,15 @@ export interface MassageCourseCertificate extends BaseCertificate {
 
 export interface GiftCertificate extends BaseCertificate {
   type: "gift_certificate";
+  /** Denomination is also the price */
   denomination: number;
-  price: number;
 }
 
 export interface NamedGiftCertificate extends BaseCertificate {
   type: "named_gift_certificate";
   title: string;
+  /** Denomination is also the price */
   denomination: number;
-  price: number;
 }
 
 export interface MasterClassCertificate extends BaseCertificate {

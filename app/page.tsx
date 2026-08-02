@@ -6,7 +6,7 @@ import Link from "next/link";
 import { SectionCarousel } from "@/components/certificates/section-carousel";
 import dynamic from "next/dynamic";
 import { Certificate } from "@/types/certificate";
-import { motion } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 import { AmbientBackground } from "@/components/layout/ambient-background";
 import { SectionHeader } from "@/components/layout/section-header";
 import { Marquee } from "@/components/ui/marquee";
@@ -15,6 +15,12 @@ import { SplashScreen } from "@/components/layout/splash-screen";
 import { ScrollBlur } from "@/components/layout/scroll-blur";
 import { CursorSpotlight } from "@/components/layout/cursor-spotlight";
 import { siteConfig } from "@/lib/site-config";
+import {
+  INTRO_DELAY,
+  INTRO_DELAY_SKIPPED,
+  hasSeenSplash,
+} from "@/lib/animation-config";
+import { track } from "@/lib/analytics";
 
 const CheckoutOverlay = dynamic(
   () => import("@/components/checkout/checkout-overlay"),
@@ -31,7 +37,18 @@ export default function Home() {
   );
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
+  // Returning visitors skip the splash, so the header intro starts sooner.
+  // Transition timing isn't part of the SSR markup, so this is hydration-safe.
+  const [introDelay] = useState(() =>
+    hasSeenSplash() ? INTRO_DELAY_SKIPPED : INTRO_DELAY
+  );
+
   const handleSelect = (certificate: Certificate, variantId?: string) => {
+    track("certificate_selected", {
+      certificate_id: certificate.id,
+      certificate_type: certificate.type,
+      variant_id: variantId,
+    });
     setSelectedCertificate(certificate);
     setSelectedVariantId(variantId || null);
     setIsCheckoutOpen(true);
@@ -51,7 +68,8 @@ export default function Home() {
   const masterClasses = certificates.filter((c) => c.type === "master_class");
 
   return (
-    <main className="min-h-screen w-full bg-background text-foreground selection:bg-stone-200 dark:selection:bg-stone-800 overflow-x-hidden relative scroll-smooth">
+    <MotionConfig reducedMotion="user">
+      <main className="min-h-screen w-full bg-background text-foreground selection:bg-stone-200 dark:selection:bg-stone-800 overflow-x-hidden relative scroll-smooth">
       <SplashScreen />
       <AmbientBackground />
       <CursorSpotlight />
@@ -68,7 +86,7 @@ export default function Home() {
               hidden: { opacity: 0 },
               visible: {
                 opacity: 1,
-                transition: { staggerChildren: 0.2, delayChildren: 2.4 },
+                transition: { staggerChildren: 0.2, delayChildren: introDelay },
               },
             }}
             className="space-y-8 relative z-10"
@@ -126,7 +144,11 @@ export default function Home() {
           <motion.div
             initial={{ height: 0 }}
             animate={{ height: "100px" }}
-            transition={{ delay: 3, duration: 1.5, ease: "easeInOut" }}
+            transition={{
+              delay: introDelay + 0.6,
+              duration: 1.5,
+              ease: "easeInOut",
+            }}
             className="absolute bottom-0 w-px bg-stone-300 dark:bg-stone-800"
           />
         </header>
@@ -261,8 +283,9 @@ export default function Home() {
             </Link>
           </div>
           <p>© {new Date().getFullYear()} All rights reserved.</p>
-        </div>
-      </footer>
-    </main>
+          </div>
+        </footer>
+      </main>
+    </MotionConfig>
   );
 }

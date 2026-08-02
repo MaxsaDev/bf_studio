@@ -15,6 +15,8 @@ interface CertificateCardVisualProps {
   className?: string;
   layoutId?: string;
   isDark?: boolean;
+  /** Preload the background image — set only for the initially visible card */
+  imagePriority?: boolean;
 }
 
 export function CertificateCardVisual({
@@ -27,6 +29,7 @@ export function CertificateCardVisual({
   className,
   layoutId,
   isDark = false,
+  imagePriority = false,
 }: CertificateCardVisualProps) {
   // Tilt Logic
   const ref = useRef<HTMLDivElement>(null);
@@ -43,6 +46,11 @@ export function CertificateCardVisual({
   // Holographic glare movement
   const glareX = useTransform(mouseXSpring, [-0.5, 0.5], ["0%", "100%"]);
   const glareY = useTransform(mouseYSpring, [-0.5, 0.5], ["0%", "100%"]);
+
+  // Foil sheen movement — hooks must stay unconditional even though the
+  // layer itself only renders for light cards
+  const sheenX = useTransform(mouseXSpring, [-0.5, 0.5], ["-100%", "100%"]);
+  const sheenOpacity = useTransform(mouseXSpring, (v) => Math.abs(v) * 0.5);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return;
@@ -100,7 +108,7 @@ export function CertificateCardVisual({
             fill
             className="object-cover"
             sizes="(max-width: 768px) 95vw, 500px"
-            priority
+            priority={imagePriority}
           />
         </div>
 
@@ -155,8 +163,8 @@ export function CertificateCardVisual({
                rgba(255,255,255,0.1) 55%,
                transparent 70%
             )`,
-            x: useTransform(mouseXSpring, [-0.5, 0.5], ["-100%", "100%"]),
-            opacity: useTransform(mouseXSpring, (v) => Math.abs(v) * 0.5),
+            x: sheenX,
+            opacity: sheenOpacity,
           }}
           className="absolute inset-0 z-20 pointer-events-none mix-blend-soft-light"
         />
