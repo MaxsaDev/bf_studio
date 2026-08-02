@@ -299,4 +299,11 @@ export const certificates: Certificate[] = [
     description: "Масаж гарячим камінням",
     price: 1550,
   },
+  {
+    id: 25,
+    type: "special",
+    title: "Антистрес-масаж",
+    description: "Антистрес-масаж 90 хв",
+    price: 1900,
+  },
 ];
