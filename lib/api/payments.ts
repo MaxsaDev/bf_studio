@@ -1,10 +1,11 @@
 /**
  * Payment API Service
- * Handles all payment-related API calls to BodyFactory backend
+ *
+ * Certificate purchases go through our own server-side proxy
+ * (/api/create-invoice) which attaches the payment-service API key and
+ * selects the studio WayForPay merchant. The browser never talks to the
+ * payments service directly.
  */
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://bf-club-delta.vercel.app";
 
 export interface CreateInvoiceRequest {
   amount: number;
@@ -27,6 +28,7 @@ export interface CreateInvoiceRequest {
 
 export interface CreateInvoiceResponse {
   url: string;
+  orderReference?: string;
 }
 
 export interface ApiError {
@@ -49,7 +51,7 @@ export interface ApiError {
 export async function createPaymentInvoice(
   data: CreateInvoiceRequest
 ): Promise<CreateInvoiceResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/payments`, {
+  const response = await fetch("/api/create-invoice", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
