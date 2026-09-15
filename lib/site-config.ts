@@ -48,14 +48,14 @@ export const siteConfig = {
       displayText: "3 місяці",
 
       // Full note shown on success page
-      note: "Строк дії BFCard — 3 місяці з дати оплати. Не забудьте записатися на сеанс завчасно, щоб гарантувати зручний для вас час.",
+      note: "Строк дії BFCard - 3 місяці з дати оплати. Не забудьте записатися на сеанс завчасно, щоб гарантувати зручний для вас час.",
 
       // For special promotions (Black Friday, etc.)
       // Uncomment and modify these during promotions:
       isPromotion: false,
       promotionLabel: "Чорна п'ятниця 2025",
       promotionNote:
-        "Строк отримання послуги — 6 місяців з дати оплати. Не забудьте записатися на сеанс завчасно, щоб гарантувати зручний для вас час.",
+        "Строк отримання послуги - 6 місяців з дати оплати. Не забудьте записатися на сеанс завчасно, щоб гарантувати зручний для вас час.",
     },
   },
 
@@ -86,6 +86,32 @@ export const siteConfig = {
   },
 
   /**
+   * How the physical BFCard reaches the buyer / recipient.
+   * Delivery is chosen once per order on the payment screen.
+   */
+  delivery: {
+    /** Pick the card up at the studio, no shipping */
+    pickup: {
+      enabled: true as boolean,
+      label: "Забрати в студії",
+      note: "Львів. Адміністратор узгодить з вами зручний час.",
+    },
+    /**
+     * Nova Poshta branch or parcel locker. The waybill is created by the
+     * payments service after the payment; who pays, the declared value, the
+     * parcel size and the studio's sender branch are its env (NOVA_POSHTA_*
+     * in bf-back-v2), not something the site decides.
+     */
+    novaPoshta: {
+      enabled: true as boolean,
+      label: "Нова пошта",
+      note: "Відділення або поштомат. Доставку оплачує отримувач за тарифами Нової пошти.",
+      /** Display only ("оплата при отриманні"); must match NOVA_POSHTA_PAYER in bf-back-v2 */
+      recipientPays: true as boolean,
+    },
+  },
+
+  /**
    * Legal Pages
    */
   legal: {
@@ -110,6 +136,14 @@ export const siteConfig = {
       enabled: false,
       message: "",
       // Example: "Чорна п'ятниця! Знижка 20% на всі сертифікати до 30.11.2025"
+    },
+    /**
+     * Add-on upsell step in checkout ("Додатки": foot massage, candles, ...).
+     * false = plain BFCard sales only: no step, no stickers on the card, and
+     * the payment route rejects requests that still carry add-ons.
+     */
+    addons: {
+      enabled: true as boolean,
     },
   },
 } as const;

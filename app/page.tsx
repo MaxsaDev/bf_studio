@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { certificates } from "@/data/certificates";
 import Link from "next/link";
 import { SectionCarousel } from "@/components/certificates/section-carousel";
@@ -21,6 +21,13 @@ import {
   hasSeenSplash,
 } from "@/lib/animation-config";
 import { track } from "@/lib/analytics";
+import { getAvailableAddons } from "@/lib/addons";
+import { resolveCart } from "@/lib/cart";
+import { useCart } from "@/lib/use-cart";
+import { CartButton } from "@/components/checkout/cart-button";
+import { PendingShipmentProcessor } from "@/components/checkout/pending-shipment-processor";
+import type { CheckoutScreen } from "@/components/checkout/checkout-progress";
+import type { PendingProduct } from "@/components/checkout/checkout-overlay";
 
 const CheckoutOverlay = dynamic(
   () => import("@/components/checkout/checkout-overlay"),
@@ -30,11 +37,10 @@ const CheckoutOverlay = dynamic(
 );
 
 export default function Home() {
-  const [selectedCertificate, setSelectedCertificate] =
-    useState<Certificate | null>(null);
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
-    null
-  );
+  const cart = useCart();
+  const cartTotal = useMemo(() => resolveCart(cart.lines).total, [cart.lines]);
+  const [pendingProduct, setPendingProduct] = useState<PendingProduct | null>(null);
+  const [checkoutScreen, setCheckoutScreen] = useState<CheckoutScreen>("cart");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   // Returning visitors skip the splash, so the header intro starts sooner.
@@ -43,16 +49,35 @@ export default function Home() {
     hasSeenSplash() ? INTRO_DELAY_SKIPPED : INTRO_DELAY
   );
 
+  // "Придбати" on a card: configure add-ons first when the product offers
+  // any, otherwise the card goes straight into the cart.
   const handleSelect = (certificate: Certificate, variantId?: string) => {
+    const resolvedVariantId = variantId ?? null;
     track("certificate_selected", {
       certificate_id: certificate.id,
       certificate_type: certificate.type,
       variant_id: variantId,
     });
-    setSelectedCertificate(certificate);
-    setSelectedVariantId(variantId || null);
+
+    if (getAvailableAddons(certificate, resolvedVariantId).length > 0) {
+      setPendingProduct({ certificate, variantId: resolvedVariantId });
+      setCheckoutScreen("product");
+    } else {
+      cart.add({ certificateId: certificate.id, variantId: resolvedVariantId, addons: [] });
+      setPendingProduct(null);
+      setCheckoutScreen("cart");
+    }
     setIsCheckoutOpen(true);
   };
+
+  const openCart = useCallback(() => {
+    setPendingProduct(null);
+    setCheckoutScreen("cart");
+    setIsCheckoutOpen(true);
+  }, []);
+
+  // Stable reference: the dialog subscribes its key handler to onClose
+  const handleCloseCheckout = useCallback(() => setIsCheckoutOpen(false), []);
 
   // Group certificates
   const massageCourses = certificates.filter(
@@ -75,6 +100,14 @@ export default function Home() {
       <CursorSpotlight />
       <ScrollBlur />
       <FloatingNav />
+      <CartButton
+        count={cart.count}
+        total={cartTotal}
+        visible={!isCheckoutOpen}
+        onClick={openCart}
+      />
+      {/* Creates the Nova Poshta waybill for a paid order the buyer never returned from */}
+      <PendingShipmentProcessor />
 
       <div className="relative z-10">
         {/* Large Cinematic Header */}
@@ -257,9 +290,10 @@ export default function Home() {
 
       <CheckoutOverlay
         isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-        certificate={selectedCertificate}
-        variantId={selectedVariantId}
+        onClose={handleCloseCheckout}
+        initialScreen={checkoutScreen}
+        pendingProduct={pendingProduct}
+        cart={cart}
       />
 
       {/* Footer */}

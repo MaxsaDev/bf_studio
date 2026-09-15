@@ -1,1 +1,14 @@
-{"name":"","short_name":"","icons":[{"src":"/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"/android-chrome-512x512.png","sizes":"512x512","type":"image/png"}],"theme_color":"#ffffff","background_color":"#ffffff","display":"standalone"}
+{
+  "name": "Body Factory Studio",
+  "short_name": "Body Factory",
+  "description": "Подарункові сертифікати на масаж у Body Factory, Львів",
+  "lang": "uk",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F5F4",
+  "theme_color": "#F5F5F4",
+  "icons": [
+    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

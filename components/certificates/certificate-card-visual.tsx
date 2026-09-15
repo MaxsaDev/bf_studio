@@ -2,8 +2,84 @@
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { ReactNode, useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { CSSProperties, ReactNode, useRef } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import { CERTIFICATE_IMAGE } from "@/lib/certificate-config";
+
+/** An add-on sticker shown on the card face */
+export interface CardSticker {
+  id: string;
+  icon: string;
+  label: string;
+  qty: number;
+}
+
+/**
+ * Sticker placement from the brief: three per column, left and right of the
+ * title. Filled alternately so any selection stays balanced. Percentages are
+ * relative to the card box, so the layout scales with it.
+ */
+const STICKER_SLOTS: ReadonlyArray<{ side: "left" | "right"; top: string }> = [
+  { side: "left", top: "15%" },
+  { side: "right", top: "15%" },
+  { side: "left", top: "38.5%" },
+  { side: "right", top: "38.5%" },
+  { side: "left", top: "62%" },
+  { side: "right", top: "62%" },
+];
+
+function CardStickers({ stickers }: { stickers: CardSticker[] }) {
+  return (
+    <div
+      className="absolute inset-0 z-30 pointer-events-none"
+      style={{ transform: "translateZ(40px)" }}
+      aria-hidden
+    >
+      <AnimatePresence>
+        {stickers.slice(0, STICKER_SLOTS.length).map((sticker, i) => {
+          const slot = STICKER_SLOTS[i];
+          const position: CSSProperties =
+            slot.side === "left"
+              ? { top: slot.top, left: "3.5%" }
+              : { top: slot.top, right: "3.5%" };
+
+          return (
+            <motion.div
+              key={sticker.id}
+              layout
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 420, damping: 28 }}
+              className="absolute aspect-square w-[9%] rounded-full bg-white shadow-[0_2px_10px_rgba(0,0,0,0.14)]"
+              style={position}
+            >
+              <Image
+                src={sticker.icon}
+                alt=""
+                fill
+                unoptimized
+                sizes="64px"
+                className="p-[2%]"
+              />
+              {sticker.qty > 1 && (
+                <span className="absolute -bottom-[6%] -right-[6%] flex h-[42%] min-w-[42%] items-center justify-center rounded-full bg-stone-900 px-[8%] text-[9px] sm:text-[11px] font-bold leading-none text-white ring-2 ring-white">
+                  {sticker.qty}
+                </span>
+              )}
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 interface CertificateCardVisualProps {
   title: ReactNode;
@@ -17,6 +93,12 @@ interface CertificateCardVisualProps {
   isDark?: boolean;
   /** Preload the background image — set only for the initially visible card */
   imagePriority?: boolean;
+  /**
+   * Add-on stickers to show beside the title. Pass an array (even empty) to
+   * reserve the side columns so the title does not jump when the first
+   * sticker appears; leave undefined on carousel cards.
+   */
+  stickers?: CardSticker[];
 }
 
 export function CertificateCardVisual({
@@ -25,12 +107,14 @@ export function CertificateCardVisual({
   subtitle,
   subtitleColor,
   description,
-  imageSrc = "/template.jpg",
+  imageSrc = CERTIFICATE_IMAGE,
   className,
   layoutId,
   isDark = false,
   imagePriority = false,
+  stickers,
 }: CertificateCardVisualProps) {
+  const hasStickerArea = stickers !== undefined;
   // Tilt Logic
   const ref = useRef<HTMLDivElement>(null);
 
@@ -175,7 +259,12 @@ export function CertificateCardVisual({
         style={{ transform: "translateZ(40px)" }} // Actual 3D push
         className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 z-30"
       >
-        <div className="space-y-3 max-w-[85%] mx-auto">
+        <div
+          className={cn(
+            "space-y-3 mx-auto",
+            hasStickerArea ? "max-w-[74%]" : "max-w-[85%]"
+          )}
+        >
           {/* Enhanced Title Contrast */}
           <div
             className={cn(
@@ -184,7 +273,11 @@ export function CertificateCardVisual({
                 (isDark
                   ? "text-stone-100"
                   : "text-stone-900 dark:text-stone-100"),
-              typeof title === "string" ? "text-2xl sm:text-4xl" : ""
+              typeof title === "string"
+                ? hasStickerArea
+                  ? "text-lg sm:text-3xl"
+                  : "text-2xl sm:text-4xl"
+                : ""
             )}
             style={titleColor ? { color: titleColor } : undefined}
           >
@@ -192,10 +285,14 @@ export function CertificateCardVisual({
           </div>
 
           {(subtitle || description) && (
-            <div className="flex items-center justify-center gap-4 mt-3 opacity-90">
+            <div
+              className={cn(
+                "flex items-center justify-center mt-3 opacity-90 gap-2 sm:gap-4"
+              )}
+            >
               <span
                 className={cn(
-                  "h-px w-8",
+                  "h-px w-4 sm:w-8",
                   isDark
                     ? "bg-stone-100/20"
                     : "bg-stone-900/20 dark:bg-stone-100/20"
@@ -215,7 +312,7 @@ export function CertificateCardVisual({
               </div>
               <span
                 className={cn(
-                  "h-px w-8",
+                  "h-px w-4 sm:w-8",
                   isDark
                     ? "bg-stone-100/20"
                     : "bg-stone-900/20 dark:bg-stone-100/20"
@@ -225,6 +322,9 @@ export function CertificateCardVisual({
           )}
         </div>
       </motion.div>
+
+      {/* Add-on stickers: three per side, flanking the title */}
+      {stickers && stickers.length > 0 && <CardStickers stickers={stickers} />}
 
       {/* Premium Border/Sheen */}
       <div className="absolute inset-0 border border-stone-900/5 dark:border-white/10 rounded-xl pointer-events-none ring-1 ring-inset ring-white/20 dark:ring-black/10 z-40" />

@@ -3,6 +3,7 @@ import {
   formatPhoneDisplay,
   formatPhoneForAPI,
   UA_PHONE_DISPLAY_REGEX,
+  UA_PHONE_API_REGEX,
 } from "../phone";
 
 describe("formatPhoneDisplay", () => {
@@ -47,5 +48,19 @@ describe("formatPhoneForAPI", () => {
 
   it("keeps already-international digits", () => {
     expect(formatPhoneForAPI("380969189089")).toBe("+380969189089");
+  });
+});
+
+describe("UA_PHONE_API_REGEX", () => {
+  it("accepts the API format and rejects everything else", () => {
+    expect("+380969189089").toMatch(UA_PHONE_API_REGEX);
+    expect("380969189089").not.toMatch(UA_PHONE_API_REGEX);
+    expect("+38 (096) 918-90-89").not.toMatch(UA_PHONE_API_REGEX);
+    expect("+3809691890890").not.toMatch(UA_PHONE_API_REGEX);
+    expect("+380 96 918 90 89").not.toMatch(UA_PHONE_API_REGEX);
+  });
+
+  it("matches what formatPhoneForAPI produces from a valid display value", () => {
+    expect(formatPhoneForAPI("+38 (096) 918-90-89")).toMatch(UA_PHONE_API_REGEX);
   });
 });

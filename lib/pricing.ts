@@ -69,8 +69,30 @@ export function resolvePrice(
 
 /** "2026-03-01" → "до 01.03" for discount urgency badges */
 export function formatDiscountEndDate(endDate: string): string | null {
-  const date = new Date(endDate);
+  // `new Date("YYYY-MM-DD")` is UTC midnight, which toLocaleDateString then
+  // shifts to the previous day in negative-offset timezones (a Kyiv "23.03"
+  // rendered as "22.03" for a visitor in New York). Build date-only strings
+  // from their parts in local time so the calendar date survives everywhere.
+  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(endDate);
+  const date = dateOnly
+    ? new Date(
+        Number(dateOnly[1]),
+        Number(dateOnly[2]) - 1,
+        Number(dateOnly[3])
+      )
+    : new Date(endDate);
+
   if (Number.isNaN(date.getTime())) return null;
+
+  // Reject rolled-over parts such as "2026-13-45"
+  if (
+    dateOnly &&
+    (date.getMonth() !== Number(dateOnly[2]) - 1 ||
+      date.getDate() !== Number(dateOnly[3]))
+  ) {
+    return null;
+  }
+
   return `до ${date.toLocaleDateString("uk-UA", {
     day: "2-digit",
     month: "2-digit",

@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export function CursorSpotlight() {
+  // Only mount the (600px, blur-50px — GPU-heavy) layer for fine pointers.
+  // Starts false on both server and client, so hydration is unaffected.
+  const [enabled, setEnabled] = useState(false);
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -12,8 +16,15 @@ export function CursorSpotlight() {
   const springY = useSpring(mouseY, { stiffness: 150, damping: 30 });
 
   useEffect(() => {
-    // Disable on touch devices for performance
-    if (window.matchMedia("(pointer: coarse)").matches) return;
+    const media = window.matchMedia("(pointer: fine)");
+    const update = () => setEnabled(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
@@ -22,7 +33,9 @@ export function CursorSpotlight() {
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
+  }, [enabled, mouseX, mouseY]);
+
+  if (!enabled) return null;
 
   return (
     <motion.div

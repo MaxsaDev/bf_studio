@@ -9,22 +9,22 @@ import { StructuredData } from "@/components/seo/structured-data";
 const evolventa = localFont({
   src: [
     {
-      path: "../public/fonts/Evolventa/Evolventa-Regular.ttf",
+      path: "./fonts/Evolventa/Evolventa-Regular.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../public/fonts/Evolventa/Evolventa-Oblique.ttf",
+      path: "./fonts/Evolventa/Evolventa-Oblique.ttf",
       weight: "400",
       style: "italic",
     },
     {
-      path: "../public/fonts/Evolventa/Evolventa-Bold.ttf",
+      path: "./fonts/Evolventa/Evolventa-Bold.ttf",
       weight: "700",
       style: "normal",
     },
     {
-      path: "../public/fonts/Evolventa/Evolventa-BoldOblique.ttf",
+      path: "./fonts/Evolventa/Evolventa-BoldOblique.ttf",
       weight: "700",
       style: "italic",
     },
@@ -39,7 +39,11 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Body Factory Studio | Premium",
+  title: {
+    default: "Body Factory Studio | Premium",
+    // Sub-pages export a plain title and get the brand suffix for free
+    template: "%s | Body Factory",
+  },
   description: "Оберіть ідеальний подарунок на масаж у Body Factory",
   keywords: [
     "Body Factory",
@@ -67,6 +71,12 @@ export const metadata: Metadata = {
         alt: "Body Factory подарунковий сертифікат",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Body Factory Studio | Premium",
+    description: "Оберіть ідеальний подарунок на масаж у Body Factory",
+    images: ["/bf_card_white_template.jpg"],
   },
   manifest: "/site.webmanifest",
 };

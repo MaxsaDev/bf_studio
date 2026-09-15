@@ -1,3 +1,5 @@
+import type { AddonLimits } from "./addon";
+
 export type CertificateType =
   | "massage_course"
   | "gift_certificate"
@@ -18,6 +20,8 @@ export interface CertificateVariant {
   price: number;
   sessions: number;
   discount?: Discount;
+  /** Add-on limits for this variant (single session vs full course differ) */
+  addons?: AddonLimits;
 }
 
 export interface BaseCertificate {
@@ -25,6 +29,8 @@ export interface BaseCertificate {
   type: CertificateType;
   description: string;
   discount?: Discount;
+  /** Add-on limits for this product; omit to offer none. Courses set them per variant */
+  addons?: AddonLimits;
 }
 
 export interface MassageCourseCertificate extends BaseCertificate {

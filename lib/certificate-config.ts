@@ -94,6 +94,14 @@ export const GIFT_CERT_CURRENCY_SIZE = "text-2xl sm:text-3xl";
  */
 export const NAMED_CERT_TITLE_SIZE = "text-[3rem] sm:text-[4rem]";
 
+/**
+ * Narrower variants used in checkout when add-on stickers flank the title
+ * (three per side, see CertificateCardVisual)
+ */
+export const GIFT_CERT_DENOMINATION_SIZE_COMPACT = "text-[3.5rem] sm:text-[5.5rem]";
+export const GIFT_CERT_CURRENCY_SIZE_COMPACT = "text-lg sm:text-2xl";
+export const NAMED_CERT_TITLE_SIZE_COMPACT = "text-[1.75rem] sm:text-[3rem]";
+
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================

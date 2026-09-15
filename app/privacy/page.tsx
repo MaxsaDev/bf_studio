@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
+
+export const metadata: Metadata = {
+  title: siteConfig.legal.privacy.title,
+  description:
+    "Політика конфіденційності та обробки персональних даних студії професійного масажу Body Factory, Львів.",
+};
 
 export default function PrivacyPage() {
   return (
@@ -116,7 +124,7 @@ export default function PrivacyPage() {
               <p>
                 1.1. Ця Політика визначає порядок збору, зберігання,
                 використання та захисту персональних даних Клієнтів Студії
-                професійного масажу <strong>Body Factory</strong> (далі —
+                професійного масажу <strong>Body Factory</strong> (далі -
                 Продавець).
               </p>
               <p>
@@ -125,37 +133,37 @@ export default function PrivacyPage() {
                 р. № 2297-VI.
               </p>
               <p>
-                1.3. <strong>Сайт</strong> — bodyfactory.studio.
+                1.3. <strong>Сайт</strong> - bodyfactory.studio.
               </p>
               <p>
-                1.4. <strong>Послуга</strong> — сеанс або курс масажу, право на
+                1.4. <strong>Послуга</strong> - сеанс або курс масажу, право на
                 який Клієнт набуває після внесення завдатку.
               </p>
               <p>
-                1.5. <strong>Body Factory Card</strong> — паперовий або
+                1.5. <strong>Body Factory Card</strong> - паперовий або
                 електронний документ, що підтверджує факт внесення завдатку.
                 Body Factory Card не є товаром і не є засобом розрахунку. Раніше
                 видані «сертифікати Body Factory» у цілях обробки персональних
                 даних прирівнюються до Body Factory Card.
               </p>
               <p>
-                1.6. <strong>Клієнт</strong> — фізична особа, яка вносить
+                1.6. <strong>Клієнт</strong> - фізична особа, яка вносить
                 завдаток і/або пред'являє Body Factory Card (або раніше виданий
                 сертифікат Body Factory) для отримання послуги.
               </p>
               <p>
-                1.7. <strong>Персональні дані</strong> — ім'я та номер телефону
+                1.7. <strong>Персональні дані</strong> - ім'я та номер телефону
                 Клієнта, які Продавець просить надати під час внесення завдатку
                 або активації Body Factory Card (чи раніше виданого
                 сертифіката).
               </p>
               <p>
-                1.8. <strong>Адміністратор</strong> — уповноважений працівник
+                1.8. <strong>Адміністратор</strong> - уповноважений працівник
                 Продавця, який відповідає за ведення бази даних Клієнтів і
                 обробку персональних даних.
               </p>
               <p>
-                1.9. <strong>База даних Клієнтів</strong> — сукупність даних, що
+                1.9. <strong>База даних Клієнтів</strong> - сукупність даних, що
                 зберігаються у системі постачальника програмного забезпечення,
                 який надає Продавцю технічні засоби для обліку клієнтів.
                 Продавець несе відповідальність за надання достовірних даних і

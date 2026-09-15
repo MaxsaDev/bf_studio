@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "bf-studio-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "bf-studio-prod-localservice",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "PAYMENT_SERVICE_URL=http://localhost:3011/api/v1 npm run start"
+      ],
+      "port": 3000
+    }
+  ]
+}

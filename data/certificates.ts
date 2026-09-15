@@ -1,5 +1,12 @@
 import { Certificate } from "@/types/certificate";
+import { ADDONS_COURSE, ADDONS_SINGLE } from "./addons";
 
+/**
+ * `addons` = max quantity of each add-on for that product (see data/addons.ts),
+ * copied from the "bf-card-additions" sheet. Omit the key to offer none
+ * (master classes). Course variants carry their own limits: a single session
+ * offers one of each, a full course 0-6 of each.
+ */
 export const certificates: Certificate[] = [
   {
     id: 1,
@@ -13,6 +20,7 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1400,
         sessions: 1,
+        addons: ADDONS_SINGLE,
       },
       {
         id: "basic",
@@ -22,7 +30,8 @@ export const certificates: Certificate[] = [
         sessions: 10,
         discount: {
           percentage: 5,
-        }
+        },
+        addons: ADDONS_COURSE,
       },
     ],
   },
@@ -38,6 +47,7 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1400,
         sessions: 1,
+        addons: ADDONS_SINGLE,
       },
       {
         id: "express",
@@ -47,7 +57,8 @@ export const certificates: Certificate[] = [
         sessions: 6,
         discount: {
           percentage: 5,
-        }
+        },
+        addons: ADDONS_COURSE,
       },
     ],
   },
@@ -58,6 +69,14 @@ export const certificates: Certificate[] = [
     description:
       "Сеанс парного масажу для 2 осіб на вибір: загальний оздоровчий, лімфодренажний, м'язове відновлення або розслабляючий масаж — при світлі свічок",
     price: 3300,
+    // Candles are already part of the session
+    addons: {
+      foot_massage: 1,
+      hand_massage: 1,
+      head_massage: 1,
+      aroma_oils: 1,
+      extra_time: 1,
+    },
   },
   {
     id: 4,
@@ -71,6 +90,7 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1100,
         sessions: 1,
+        addons: ADDONS_SINGLE,
       },
       {
         id: "course",
@@ -80,7 +100,8 @@ export const certificates: Certificate[] = [
         sessions: 6,
         discount: {
           percentage: 5,
-        }
+        },
+        addons: ADDONS_COURSE,
       },
     ],
   },
@@ -96,6 +117,8 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1500,
         sessions: 1,
+        // The complex already includes feet, hands, oils and candles
+        addons: { head_massage: 1, extra_time: 1 },
       },
       {
         id: "course",
@@ -105,7 +128,8 @@ export const certificates: Certificate[] = [
         sessions: 6,
         discount: {
           percentage: 5,
-        }
+        },
+        addons: { head_massage: 6, extra_time: 6 },
       },
     ],
   },
@@ -121,6 +145,7 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1350,
         sessions: 1,
+        addons: ADDONS_SINGLE,
       },
       {
         id: "course",
@@ -130,7 +155,8 @@ export const certificates: Certificate[] = [
         sessions: 6,
         discount: {
           percentage: 5,
-        }
+        },
+        addons: ADDONS_COURSE,
       },
     ],
   },
@@ -146,6 +172,7 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1350,
         sessions: 1,
+        addons: ADDONS_SINGLE,
       },
       {
         id: "course",
@@ -155,7 +182,8 @@ export const certificates: Certificate[] = [
         sessions: 6,
         discount: {
           percentage: 5,
-        }
+        },
+        addons: ADDONS_COURSE,
       },
     ],
   },
@@ -171,6 +199,7 @@ export const certificates: Certificate[] = [
         title: "1 сеанс з курсу",
         price: 1350,
         sessions: 1,
+        addons: ADDONS_SINGLE,
       },
       {
         id: "course",
@@ -180,7 +209,8 @@ export const certificates: Certificate[] = [
         sessions: 6,
         discount: {
           percentage: 5,
-        }
+        },
+        addons: ADDONS_COURSE,
       },
     ],
   },
@@ -189,30 +219,35 @@ export const certificates: Certificate[] = [
     type: "gift_certificate",
     denomination: 500,
     description: "Послуги масажу 500 грн",
+    addons: ADDONS_SINGLE,
   },
   {
     id: 10,
     type: "gift_certificate",
     denomination: 1000,
     description: "Послуги масажу 1000 грн",
+    addons: ADDONS_SINGLE,
   },
   {
     id: 11,
     type: "gift_certificate",
     denomination: 2000,
     description: "Послуги масажу 2000 грн",
+    addons: ADDONS_SINGLE,
   },
   {
     id: 12,
     type: "gift_certificate",
     denomination: 3000,
     description: "Послуги масажу 3000 грн",
+    addons: ADDONS_SINGLE,
   },
   {
     id: 13,
     type: "gift_certificate",
     denomination: 5000,
     description: "Послуги масажу 5000 грн",
+    addons: ADDONS_SINGLE,
   },
   {
     id: 14,
@@ -220,6 +255,7 @@ export const certificates: Certificate[] = [
     denomination: 2000,
     title: "Рубіновий",
     description: "Послуги масажу 2000 грн",
+    addons: ADDONS_SINGLE,
   },
   {
     id: 15,
@@ -227,6 +263,7 @@ export const certificates: Certificate[] = [
     denomination: 500,
     title: "Смарагдовий",
     description: "Послуги масажу 500 грн",
+    addons: ADDONS_SINGLE,
   },
   {
     id: 16,
@@ -234,6 +271,7 @@ export const certificates: Certificate[] = [
     denomination: 1000,
     title: "Сапфіровий",
     description: "Послуги масажу 1000 грн",
+    addons: ADDONS_SINGLE,
   },
   {
     id: 17,
@@ -276,6 +314,8 @@ export const certificates: Certificate[] = [
     title: "Загальний оздоровчий на 90 хв",
     description: "Загальний оздоровчий масаж 90 хв",
     price: 1900,
+    // Body-part add-ons are not offered for the 90-minute session
+    addons: { aroma_oils: 1, candles: 1, extra_time: 1 },
   },
   {
     id: 23,
@@ -283,6 +323,7 @@ export const certificates: Certificate[] = [
     title: "Розслабляючий",
     description: "Розслабляючий масаж",
     price: 1300,
+    addons: ADDONS_SINGLE,
   },
   {
     id: 24,
@@ -290,6 +331,14 @@ export const certificates: Certificate[] = [
     title: "Гарячим камінням",
     description: "Масаж гарячим камінням",
     price: 1550,
+    // Candles are already part of the session
+    addons: {
+      foot_massage: 1,
+      hand_massage: 1,
+      head_massage: 1,
+      aroma_oils: 1,
+      extra_time: 1,
+    },
   },
   {
     id: 25,
@@ -297,5 +346,13 @@ export const certificates: Certificate[] = [
     title: "Антистрес-масаж",
     description: "Антистрес-масаж 90 хв",
     price: 1900,
+    // Feet are already part of the anti-stress session
+    addons: {
+      hand_massage: 1,
+      head_massage: 1,
+      aroma_oils: 1,
+      candles: 1,
+      extra_time: 1,
+    },
   },
 ];

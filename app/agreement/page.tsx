@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
+
+export const metadata: Metadata = {
+  title: siteConfig.legal.agreement.title,
+  description:
+    "Умови придбання та використання подарункових сертифікатів (BFCard) студії професійного масажу Body Factory, Львів.",
+};
 
 export default function AgreementPage() {
   return (
@@ -144,13 +152,13 @@ export default function AgreementPage() {
               </p>
               <ul className="list-none ml-6 space-y-2">
                 <li>
-                  <strong>а) Body Factory Card на послугу</strong> — це
+                  <strong>а) Body Factory Card на послугу</strong> - це
                   підтвердження внесення завдатку, який забезпечує виконання
                   зобов'язань сторін щодо надання студією та отримання власником
                   зазначеної послуги протягом установленого строку.
                 </li>
                 <li>
-                  <strong>б) Body Factory Card номінальна</strong> — це
+                  <strong>б) Body Factory Card номінальна</strong> - це
                   підтвердження внесення завдатку у сумі, зазначеній на Body
                   Factory Card, який забезпечує виконання зобов'язань сторін
                   щодо надання студією та отримання власником однієї чи кількох
@@ -196,12 +204,12 @@ export default function AgreementPage() {
               </p>
               <ul className="list-none ml-6 space-y-2">
                 <li>
-                  — ознайомився з умовами цієї Угоди та повністю їх приймає;
+                  - ознайомився з умовами цієї Угоди та повністю їх приймає;
                 </li>
                 <li>
-                  — погоджується, що сплачена сума є завдатком, а не авансом;
+                  - погоджується, що сплачена сума є завдатком, а не авансом;
                 </li>
-                <li>— визнає, що Body Factory Card не є засобом розрахунку.</li>
+                <li>- визнає, що Body Factory Card не є засобом розрахунку.</li>
               </ul>
               <p>
                 2.2. Якщо Клієнт передає Body Factory Card іншій особі, він
@@ -268,10 +276,10 @@ export default function AgreementPage() {
                 звернення Клієнта:
               </p>
               <ul className="list-none ml-6 space-y-2">
-                <li>— право на послугу втрачається;</li>
-                <li>— завдаток не повертається;</li>
+                <li>- право на послугу втрачається;</li>
+                <li>- завдаток не повертається;</li>
                 <li>
-                  — послуга вважається наданою, а зобов'язання Продавця —
+                  - послуга вважається наданою, а зобов'язання Продавця -
                   виконаними.
                 </li>
               </ul>
@@ -416,7 +424,7 @@ export default function AgreementPage() {
               </p>
               <p>
                 9.2. Спірні питання вирішуються шляхом переговорів, а у разі
-                недосягнення згоди — у судовому порядку відповідно до
+                недосягнення згоди - у судовому порядку відповідно до
                 законодавства України.
               </p>
               <p>
@@ -424,10 +432,10 @@ export default function AgreementPage() {
                 підтверджує, що усвідомлено погоджується з:
               </p>
               <ul className="list-none ml-6 space-y-2">
-                <li>— умовами цієї Угоди;</li>
-                <li>— умовами Політики конфіденційності;</li>
+                <li>- умовами цієї Угоди;</li>
+                <li>- умовами Політики конфіденційності;</li>
                 <li>
-                  — статусом Body Factory Card як підтвердження внесення
+                  - статусом Body Factory Card як підтвердження внесення
                   завдатку.
                 </li>
               </ul>

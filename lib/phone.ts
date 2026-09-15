@@ -6,6 +6,9 @@
 
 export const UA_PHONE_DISPLAY_REGEX = /^\+38 \(0\d{2}\) \d{3}-\d{2}-\d{2}$/;
 
+/** API format produced by formatPhoneForAPI — validate server-side with this */
+export const UA_PHONE_API_REGEX = /^\+380\d{9}$/;
+
 /**
  * Format arbitrary input (typing, paste of "+380...", "0...", "380...")
  * into the display mask. Returns "" when cleared so the field is deletable.
@@ -13,9 +16,8 @@ export const UA_PHONE_DISPLAY_REGEX = /^\+38 \(0\d{2}\) \d{3}-\d{2}-\d{2}$/;
 export function formatPhoneDisplay(value: string): string {
   let digits = value.replace(/\D/g, "");
 
-  // Strip country code, keep the national leading 0
-  if (digits.startsWith("380")) digits = digits.slice(2);
-  else if (digits.startsWith("38")) digits = digits.slice(2);
+  // Strip country code, keep the national leading 0 ("380…" → "0…")
+  if (digits.startsWith("38")) digits = digits.slice(2);
   if (digits && !digits.startsWith("0")) digits = `0${digits}`;
   digits = digits.slice(0, 10);
 

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import {
   applyDiscount,
   resolvePrice,
@@ -8,6 +8,8 @@ import {
   MassageCourseCertificate,
   GiftCertificate,
   MasterClassCertificate,
+  NamedGiftCertificate,
+  SpecialCertificate,
 } from "@/types/certificate";
 
 const course: MassageCourseCertificate = {
@@ -86,11 +88,78 @@ describe("resolvePrice", () => {
 });
 
 describe("formatDiscountEndDate", () => {
+  const originalTz = process.env.TZ;
+  afterEach(() => {
+    if (originalTz === undefined) delete process.env.TZ;
+    else process.env.TZ = originalTz;
+  });
+
   it("formats a valid date", () => {
     expect(formatDiscountEndDate("2026-03-23")).toBe("до 23.03");
   });
 
-  it("returns null for garbage", () => {
+  it("keeps the calendar date in a negative-offset timezone", () => {
+    // Before the fix this rendered "до 22.03" (UTC midnight → previous local day)
+    process.env.TZ = "America/New_York";
+    expect(formatDiscountEndDate("2026-03-23")).toBe("до 23.03");
+    expect(formatDiscountEndDate("2026-01-01")).toBe("до 01.01");
+  });
+
+  it("keeps the calendar date in a positive-offset timezone", () => {
+    process.env.TZ = "Pacific/Auckland";
+    expect(formatDiscountEndDate("2026-03-23")).toBe("до 23.03");
+  });
+
+  it("returns null for garbage and rolled-over parts", () => {
     expect(formatDiscountEndDate("not-a-date")).toBeNull();
+    expect(formatDiscountEndDate("2026-13-45")).toBeNull();
+    expect(formatDiscountEndDate("2026-02-30")).toBeNull();
+  });
+});
+
+describe("resolvePrice — remaining certificate types", () => {
+  const special: SpecialCertificate = {
+    id: 3,
+    type: "special",
+    title: "Масаж для двох",
+    description: "Сеанс парного масажу",
+    price: 3300,
+  };
+
+  const named: NamedGiftCertificate = {
+    id: 14,
+    type: "named_gift_certificate",
+    denomination: 2000,
+    title: "Рубіновий",
+    description: "Послуги масажу 2000 грн",
+    discount: { percentage: 10, label: "Свято" },
+  };
+
+  it("uses price and title for special certificates", () => {
+    const resolved = resolvePrice(special);
+    expect(resolved.basePrice).toBe(3300);
+    expect(resolved.finalPrice).toBe(3300);
+    expect(resolved.itemTitle).toBe("Масаж для двох");
+    expect(resolved.description).toBe("Сеанс парного масажу");
+    expect(resolved.variantTitle).toBeUndefined();
+  });
+
+  it("uses denomination with certificate-level discount for named certificates", () => {
+    const resolved = resolvePrice(named, "ignored-variant-id");
+    expect(resolved.basePrice).toBe(2000);
+    expect(resolved.finalPrice).toBe(1800);
+    expect(resolved.discount?.label).toBe("Свято");
+    expect(resolved.itemTitle).toBe("Рубіновий");
+  });
+
+  it("lets a variant discount override the certificate discount for courses", () => {
+    const discountedCourse: MassageCourseCertificate = {
+      ...course,
+      discount: { percentage: 50 },
+    };
+    // variant "basic" has its own 5% → wins over the certificate's 50%
+    expect(resolvePrice(discountedCourse, "basic").finalPrice).toBe(13300);
+    // variant "session" has none → inherits the certificate's 50%
+    expect(resolvePrice(discountedCourse, "session").finalPrice).toBe(700);
   });
 });

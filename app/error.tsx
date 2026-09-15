@@ -20,7 +20,7 @@ export default function ErrorBoundary({
         Щось пішло не так
       </h1>
       <p className="text-sm text-stone-500 dark:text-stone-400 max-w-md leading-relaxed">
-        Сталася непередбачена помилка. Спробуйте оновити сторінку — якщо
+        Сталася непередбачена помилка. Спробуйте оновити сторінку - якщо
         проблема повторюється, зв&apos;яжіться з нами.
       </p>
       <Button
