@@ -127,9 +127,24 @@ function AddonRow({ addon, maxQty, qty, onChange }: AddonRowProps) {
         <p className="text-sm font-medium text-stone-900 dark:text-stone-100 leading-tight">
           {addon.title}
         </p>
-        <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 tabular-nums">
-          {addon.price} ₴{maxQty > 1 ? " за шт" : ""}
-          {qty > 1 ? ` · разом ${addon.price * qty} ₴` : ""}
+        {/*
+          One line, always: the column next to the stepper is ~90px on a
+          375px phone, so with several units the phone shows "3 шт · 1200 ₴"
+          and wider screens the unit price too. Every price keeps its "₴".
+        */}
+        <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 tabular-nums whitespace-nowrap">
+          {qty > 1 ? (
+            <>
+              <span className="sm:hidden">{qty} шт</span>
+              <span className="hidden sm:inline">{addon.price} ₴ за шт</span>
+              {" · "}
+              {addon.price * qty} ₴
+            </>
+          ) : (
+            <>
+              {addon.price} ₴{maxQty > 1 ? " за шт" : ""}
+            </>
+          )}
         </p>
       </div>
 
