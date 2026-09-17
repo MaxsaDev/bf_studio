@@ -1,10 +1,11 @@
 /**
- * How the buyer gets the physical BFCard(s): picked up at the studio, or
- * shipped by Nova Poshta to a recipient (often a different person - the
- * certificate is a gift). One delivery per order, whatever the cart holds.
+ * How the buyer gets the BFCard(s): picked up at the studio, shipped by Nova
+ * Poshta to a recipient (often a different person - the certificate is a
+ * gift), or sent electronically by the studio's staff. One delivery per
+ * order, whatever the cart holds.
  */
 
-export type DeliveryMethod = "pickup" | "nova_poshta";
+export type DeliveryMethod = "pickup" | "nova_poshta" | "electronic";
 
 export interface DeliveryRecipient {
   /** "Ім'я Прізвище" as typed by the buyer */
@@ -37,7 +38,15 @@ export interface PickupDelivery {
   method: "pickup";
 }
 
-export type DeliveryDetails = PickupDelivery | NovaPoshtaDelivery;
+/**
+ * Electronic BFCard: no shipping and no extra fields. Like pickup, the admin
+ * calls the buyer and sends the card (email, messenger - staff decide)
+ */
+export interface ElectronicDelivery {
+  method: "electronic";
+}
+
+export type DeliveryDetails = PickupDelivery | NovaPoshtaDelivery | ElectronicDelivery;
 
 /* Lookup results served by /api/np/* (shape defined by the payments service) */
 

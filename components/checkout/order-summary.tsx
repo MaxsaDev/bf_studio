@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { cn } from "@/lib/utils";
 import { formatDiscountEndDate } from "@/lib/pricing";
 import type { ResolvedCart } from "@/lib/cart";
@@ -32,6 +33,7 @@ export function OrderSummary({
                   <span className="block truncate font-medium text-stone-900 dark:text-stone-100">
                     {order.itemTitle}
                   </span>
+                  {/* Wraps only between parts: "13300 ₴ за шт" never loses its "шт" */}
                   <span className="block text-xs text-stone-500 dark:text-stone-400 tabular-nums">
                     {[
                       order.variantTitle,
@@ -39,7 +41,12 @@ export function OrderSummary({
                       line.qty > 1 ? `${order.total} ₴ за шт` : null,
                     ]
                       .filter(Boolean)
-                      .join(" · ")}
+                      .map((part, i) => (
+                        <Fragment key={i}>
+                          {i > 0 && " · "}
+                          <span className="whitespace-nowrap">{part}</span>
+                        </Fragment>
+                      ))}
                   </span>
                 </span>
                 <span className="shrink-0 text-right tabular-nums">

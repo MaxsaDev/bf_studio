@@ -7,6 +7,7 @@ import type { DeliveryDetails, DeliveryMethod } from "@/types/delivery";
  * The payment-screen form: buyer, delivery, agreement. Nova Poshta fields
  * are only validated when that method is selected; city and warehouse must
  * be picked from the lookup lists (their refs are filled by the comboboxes).
+ * Pickup and electronic carry no extra fields.
  */
 
 const PHONE_MESSAGE = "Введіть коректний номер телефону";
@@ -18,7 +19,7 @@ export const checkoutFormSchema = z
     agreement: z.boolean().refine((val) => val === true, {
       message: "Необхідно погодитись з умовами",
     }),
-    deliveryMethod: z.enum(["pickup", "nova_poshta", "none"]),
+    deliveryMethod: z.enum(["pickup", "nova_poshta", "electronic", "none"]),
     recipientName: z.string(),
     recipientPhone: z.string(),
     cityRef: z.string(),
@@ -81,7 +82,9 @@ export function checkoutFormDefaults(): CheckoutFormValues {
 /** Form values → the delivery object the payment route expects */
 export function toDeliveryDetails(values: CheckoutFormValues): DeliveryDetails | undefined {
   if (values.deliveryMethod === "none") return undefined;
-  if (values.deliveryMethod === "pickup") return { method: "pickup" };
+  if (values.deliveryMethod === "pickup" || values.deliveryMethod === "electronic") {
+    return { method: values.deliveryMethod };
+  }
   return {
     method: "nova_poshta",
     recipient: {

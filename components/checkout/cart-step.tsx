@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Image from "next/image";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -120,7 +121,7 @@ function CartLineRow({
   onEditAddons,
 }: CartLineRowProps) {
   const { line, order, lineTotal } = resolved;
-  const meta = [order.variantTitle, `${order.total} ₴ за шт`].filter(Boolean).join(" · ");
+  const metaParts = [order.variantTitle, `${order.total} ₴ за шт`].filter(Boolean);
 
   return (
     <motion.li
@@ -137,7 +138,13 @@ function CartLineRow({
             {order.itemTitle}
           </p>
           <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 tabular-nums">
-            {meta}
+            {/* Wraps only between parts, never inside "13300 ₴ за шт" */}
+            {metaParts.map((part, i) => (
+              <Fragment key={i}>
+                {i > 0 && " · "}
+                <span className="whitespace-nowrap">{part}</span>
+              </Fragment>
+            ))}
             {order.discount && (
               <span className="ml-1.5 px-1.5 py-0.5 rounded-md bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400 font-bold text-[10px] uppercase tracking-wider">
                 {order.discount.label ?? `-${order.discount.percentage}%`}

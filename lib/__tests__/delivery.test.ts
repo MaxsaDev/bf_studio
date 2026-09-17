@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
+  deliveryLabel,
+  deliveryOptionConfig,
   deliverySchema,
   describeDelivery,
   enabledDeliveryMethods,
@@ -21,9 +23,15 @@ const np: NovaPoshtaDelivery = {
 };
 
 describe("deliverySchema", () => {
-  it("accepts pickup and a full Nova Poshta delivery", () => {
+  it("accepts pickup, electronic and a full Nova Poshta delivery", () => {
     expect(deliverySchema.safeParse({ method: "pickup" }).success).toBe(true);
+    expect(deliverySchema.safeParse({ method: "electronic" }).success).toBe(true);
     expect(deliverySchema.safeParse(np).success).toBe(true);
+  });
+
+  it("keeps an electronic delivery free of recipient data", () => {
+    const parsed = deliverySchema.parse({ method: "electronic", recipient: np.recipient });
+    expect(parsed).toEqual({ method: "electronic" });
   });
 
   it("rejects a one-word recipient, a display-format phone and non-UUID refs", () => {
@@ -39,7 +47,14 @@ describe("deliverySchema", () => {
 
 describe("helpers", () => {
   it("lists the enabled methods with pickup first (the default)", () => {
-    expect(enabledDeliveryMethods()).toEqual(["pickup", "nova_poshta"]);
+    expect(enabledDeliveryMethods()).toEqual(["pickup", "nova_poshta", "electronic"]);
+  });
+
+  it("reads labels and notes from site-config", () => {
+    expect(deliveryLabel("pickup")).toBe("Забрати в студії");
+    expect(deliveryLabel("nova_poshta")).toBe("Нова пошта");
+    expect(deliveryLabel("electronic")).toBe("Електронний");
+    expect(deliveryOptionConfig("electronic").note).toContain("найближчим часом");
   });
 
   it("shortens warehouse descriptions", () => {
@@ -50,8 +65,9 @@ describe("helpers", () => {
 });
 
 describe("descriptions", () => {
-  it("describes both methods for the admin", () => {
+  it("describes every method for the admin", () => {
     expect(describeDelivery({ method: "pickup" })).toBe("Самовивіз зі студії");
+    expect(describeDelivery({ method: "electronic" })).toBe("Електронна BFCard");
     expect(describeDelivery(np)).toBe("Нова пошта: Львів, Відділення №5, Олена Петренко +380969189089");
   });
 

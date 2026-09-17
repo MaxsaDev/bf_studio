@@ -771,7 +771,7 @@ export default function CheckoutOverlay({
                                     ? undefined
                                     : watchedDeliveryMethod === "nova_poshta"
                                       ? `${deliveryLabel("nova_poshta")}${siteConfig.delivery.novaPoshta.recipientPays ? " · оплата при отриманні" : ""}`
-                                      : deliveryLabel("pickup")
+                                      : deliveryLabel(watchedDeliveryMethod)
                                 }
                               />
 

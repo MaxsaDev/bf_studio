@@ -86,8 +86,9 @@ export const siteConfig = {
   },
 
   /**
-   * How the physical BFCard reaches the buyer / recipient.
-   * Delivery is chosen once per order on the payment screen.
+   * How the BFCard reaches the buyer / recipient. Chosen once per order on
+   * the payment screen; options show in this order, the first enabled one is
+   * preselected.
    */
   delivery: {
     /** Pick the card up at the studio, no shipping */
@@ -108,6 +109,12 @@ export const siteConfig = {
       note: "Відділення або поштомат. Доставку оплачує отримувач за тарифами Нової пошти.",
       /** Display only ("оплата при отриманні"); must match NOVA_POSHTA_PAYER in bf-back-v2 */
       recipientPays: true as boolean,
+    },
+    /** Electronic BFCard: nothing to ship, staff send it to the buyer (email, messenger) */
+    electronic: {
+      enabled: true as boolean,
+      label: "Електронний",
+      note: "Адміністратор надішле вам електронну BFCard найближчим часом.",
     },
   },
 

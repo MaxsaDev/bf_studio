@@ -2,7 +2,16 @@
 
 import { useEffect, useId, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { Check, Loader2, MapPin, Package, Store, Truck } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  MapPin,
+  Package,
+  Send,
+  Store,
+  Truck,
+  type LucideIcon,
+} from "lucide-react";
 import {
   FormControl,
   FormField,
@@ -13,17 +22,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { FIELD_INPUT, FIELD_LABEL } from "@/components/checkout/checkout-styles";
 import type { CheckoutFormValues } from "@/components/checkout/checkout-form-schema";
-import { enabledDeliveryMethods } from "@/lib/delivery";
+import { deliveryOptionConfig, enabledDeliveryMethods } from "@/lib/delivery";
 import { formatPhoneDisplay, UA_PHONE_DISPLAY_REGEX } from "@/lib/phone";
-import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 import type { DeliveryMethod, NpSettlement, NpWarehouse } from "@/types/delivery";
 
 /**
- * "Отримання BFCard" block on the payment screen: pickup at the studio or
- * Nova Poshta delivery to a recipient (name, phone, city, branch/locker).
- * City and warehouse are looked up through /api/np/*, which proxy the
- * payments service; no Nova Poshta key exists in this app at all.
+ * "Отримання BFCard" block on the payment screen: pickup at the studio,
+ * Nova Poshta delivery to a recipient (name, phone, city, branch/locker) or
+ * an electronic BFCard sent by the staff. City and warehouse are looked up
+ * through /api/np/*, which proxy the payments service; no Nova Poshta key
+ * exists in this app at all.
  */
 
 type LookupStatus = "idle" | "loading" | "error" | "unavailable" | "throttled";
@@ -367,6 +376,23 @@ function WarehouseCombobox({ disabled }: { disabled?: boolean }) {
   );
 }
 
+const METHOD_ICONS: Record<DeliveryMethod, LucideIcon> = {
+  pickup: Store,
+  nova_poshta: Truck,
+  electronic: Send,
+};
+
+/**
+ * One row of options when the block is wide enough for every label on one
+ * line (desktop dialog ~546px), stacked otherwise (phones ~260-320px, where
+ * side-by-side tiles would break "Забрати в студії" and "Електронний").
+ * Container queries, so it follows the dialog width, not the viewport.
+ */
+const METHOD_GRID: Record<number, string> = {
+  2: "@min-[22rem]:grid-cols-2",
+  3: "@min-[33rem]:grid-cols-3",
+};
+
 function MethodOption({
   method,
   selected,
@@ -376,9 +402,8 @@ function MethodOption({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const label =
-    method === "pickup" ? siteConfig.delivery.pickup.label : siteConfig.delivery.novaPoshta.label;
-  const Icon = method === "pickup" ? Store : Truck;
+  const { label } = deliveryOptionConfig(method);
+  const Icon = METHOD_ICONS[method];
   return (
     <button
       type="button"
@@ -429,15 +454,21 @@ export function DeliveryFields({ disabled }: { disabled?: boolean }) {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <div role="radiogroup" aria-label="Спосіб отримання" className="grid grid-cols-2 gap-2">
-                  {methods.map((m) => (
-                    <MethodOption
-                      key={m}
-                      method={m}
-                      selected={field.value === m}
-                      onSelect={() => field.onChange(m)}
-                    />
-                  ))}
+                <div className="@container">
+                  <div
+                    role="radiogroup"
+                    aria-label="Спосіб отримання"
+                    className={cn("grid grid-cols-1 gap-2", METHOD_GRID[methods.length])}
+                  >
+                    {methods.map((m) => (
+                      <MethodOption
+                        key={m}
+                        method={m}
+                        selected={field.value === m}
+                        onSelect={() => field.onChange(m)}
+                      />
+                    ))}
+                  </div>
                 </div>
               </FormControl>
             </FormItem>
@@ -445,9 +476,11 @@ export function DeliveryFields({ disabled }: { disabled?: boolean }) {
         />
       )}
 
-      <p className="text-xs leading-relaxed text-stone-500 dark:text-stone-400">
-        {method === "pickup" ? siteConfig.delivery.pickup.note : siteConfig.delivery.novaPoshta.note}
-      </p>
+      {method !== "none" && (
+        <p className="text-xs leading-relaxed text-stone-500 dark:text-stone-400">
+          {deliveryOptionConfig(method).note}
+        </p>
+      )}
 
       {method === "nova_poshta" && (
         <div className="space-y-4">

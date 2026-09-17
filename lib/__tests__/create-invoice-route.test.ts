@@ -321,6 +321,17 @@ describe("POST /api/create-invoice - delivery", () => {
     );
   });
 
+  it("forwards the electronic choice and names it in the description", async () => {
+    fetchMock.mockResolvedValueOnce(upstreamOk());
+    const res = await POST(
+      makeRequest({ items: [{ certificateId: 9 }], name: buyer.name, phone: buyer.phone, delivery: { method: "electronic" } })
+    );
+    expect(res.status).toBe(200);
+    const sent = sentBody();
+    expect(sent.delivery).toEqual({ method: "electronic" });
+    expect(sent.orderDescription).toBe("Послуги масажу 500 грн. Доставка: Електронна BFCard");
+  });
+
   it("forwards the Nova Poshta block to the service and passes the order's client token back", async () => {
     fetchMock.mockResolvedValueOnce(upstreamOk());
     const res = await POST(

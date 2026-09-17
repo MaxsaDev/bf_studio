@@ -45,17 +45,34 @@ export const pickupDeliverySchema = z.object({
   method: z.literal("pickup"),
 });
 
+export const electronicDeliverySchema = z.object({
+  method: z.literal("electronic"),
+});
+
 export const deliverySchema = z.discriminatedUnion("method", [
   pickupDeliverySchema,
   novaPoshtaDeliverySchema,
+  electronicDeliverySchema,
 ]);
+
+/** Every method in display order; the first enabled one is preselected */
+export const DELIVERY_METHODS = ["pickup", "nova_poshta", "electronic"] as const satisfies readonly DeliveryMethod[];
+
+/** The site-config entry of one method: switch, label, note */
+export function deliveryOptionConfig(method: DeliveryMethod) {
+  switch (method) {
+    case "pickup":
+      return siteConfig.delivery.pickup;
+    case "nova_poshta":
+      return siteConfig.delivery.novaPoshta;
+    case "electronic":
+      return siteConfig.delivery.electronic;
+  }
+}
 
 /** Methods the owner switched on in site-config, in display order; the first one is preselected */
 export function enabledDeliveryMethods(): DeliveryMethod[] {
-  const methods: DeliveryMethod[] = [];
-  if (siteConfig.delivery.pickup.enabled) methods.push("pickup");
-  if (siteConfig.delivery.novaPoshta.enabled) methods.push("nova_poshta");
-  return methods;
+  return DELIVERY_METHODS.filter((method) => deliveryOptionConfig(method).enabled);
 }
 
 export function isDeliveryMethodEnabled(method: DeliveryMethod): boolean {
@@ -74,9 +91,7 @@ export function shortWarehouseLabel(
 
 /** One human-readable line for the cart summary */
 export function deliveryLabel(method: DeliveryMethod): string {
-  return method === "pickup"
-    ? siteConfig.delivery.pickup.label
-    : siteConfig.delivery.novaPoshta.label;
+  return deliveryOptionConfig(method).label;
 }
 
 /**
@@ -86,6 +101,7 @@ export function deliveryLabel(method: DeliveryMethod): string {
  */
 export function describeDelivery(delivery: DeliveryDetails): string {
   if (delivery.method === "pickup") return "Самовивіз зі студії";
+  if (delivery.method === "electronic") return "Електронна BFCard";
   const { recipient, city, warehouse } = delivery;
   return `Нова пошта: ${city.name}, ${shortWarehouseLabel(warehouse.description, warehouse.category)}, ${recipient.name} ${recipient.phone}`;
 }

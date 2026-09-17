@@ -3,6 +3,7 @@ import * as z from "zod";
 
 import { callService, serviceApiKey } from "@/lib/payment-service";
 import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
+import type { DeliveryMethod } from "@/types/delivery";
 
 /**
  * Makes sure a PAID Nova Poshta order has its waybill (ТТН).
@@ -33,7 +34,7 @@ interface ShipmentData {
   waybill?: { number: string; estimatedDeliveryDate: string; mock: boolean };
   paymentStatus?: string;
   delivery?: {
-    method: "pickup" | "nova_poshta";
+    method: DeliveryMethod;
     recipientName?: string;
     cityName?: string;
     warehouseDescription?: string;
@@ -101,7 +102,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (result.ok && data?.status === "not_applicable") {
-      // Pickup order: nothing to ship, the browser drops its pending entry
+      // Pickup / electronic order: nothing to ship, the browser drops its pending entry
       return NextResponse.json(
         { status: "failed", paymentStatus: "not_applicable" },
         { status: 409 }
