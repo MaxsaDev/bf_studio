@@ -14,6 +14,7 @@ import {
 import { callService, serviceApiKey } from "@/lib/payment-service";
 import { UA_PHONE_API_REGEX } from "@/lib/phone";
 import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
+import { buildReceiptLines, receiptTotalKop } from "@/lib/receipt";
 import type { CartLine } from "@/types/cart";
 
 /**
@@ -33,9 +34,14 @@ import type { CartLine } from "@/types/cart";
  * The whole cart becomes ONE order in the service (`POST /certificates/orders`)
  * and ONE WayForPay invoice. The service stores the priced items, the buyer
  * and the delivery choice before the invoice exists, so its payment webhook
- * can mark the order paid and create the Nova Poshta waybill on its own. The
- * `orderDescription` still lists cards, add-ons and delivery in words
- * (see describeCart): it reaches the admin SMS / Telegram.
+ * can mark the order paid and create the Nova Poshta waybill on its own.
+ *
+ * Two texts go out, for two audiences:
+ * - `products`: the invoice lines WayForPay prints on the buyer's fiscal
+ *   receipt - one per card, one per add-on under its fiscal name, no delivery
+ *   (lib/receipt.ts)
+ * - `orderDescription`: cards, add-ons and delivery in words (describeCart),
+ *   stored with the order for the staff (admin SMS, Telegram)
  *
  * The response carries the order's `clientToken` (issued by the service). For
  * Nova Poshta orders the browser keeps it and later posts it to
@@ -183,6 +189,18 @@ export async function POST(req: NextRequest) {
     })),
   }));
 
+  // The fiscal lines must add up to the charge (the service refuses them
+  // otherwise). They always do; if a future pricing change ever breaks that,
+  // sell with a single-line receipt instead of failing the purchase.
+  const receipt = buildReceiptLines(cart);
+  const receiptAddsUp = receiptTotalKop(receipt) === Math.round(cart.total * 100);
+  if (!receiptAddsUp) {
+    console.error("[create-invoice] receipt lines do not add up", {
+      total: cart.total,
+      lines: receiptTotalKop(receipt) / 100,
+    });
+  }
+
   const result = await callService<{
     invoiceUrl?: string;
     orderReference?: string;
@@ -197,6 +215,7 @@ export async function POST(req: NextRequest) {
       userId,
       items: orderItems,
       delivery,
+      ...(receiptAddsUp ? { products: receipt } : {}),
     },
     timeoutMs: 15_000,
   });

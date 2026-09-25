@@ -241,6 +241,12 @@ describe("POST /api/create-invoice - add-ons", () => {
     expect(sent.orderDescription).toBe(
       "Курс (10 сеансів) - Корекція фігури Основна. Додатки: Масаж стоп 2 шт, Ефірні олії. Доставка: Самовивіз зі студії"
     );
+    // Fiscal receipt: the card and each add-on on its own line, no delivery
+    expect(sent.products).toEqual([
+      { name: "Курс (10 сеансів) - Корекція фігури Основна", price: 13300, count: 1 },
+      { name: "Додаток до масажу «Масаж стоп»", price: 400, count: 2 },
+      { name: "Додаток до масажу «Ефірна олія»", price: 100, count: 1 },
+    ]);
   });
 
   it("keeps add-ons per card when the same product is bought twice with different stickers", async () => {
@@ -260,6 +266,13 @@ describe("POST /api/create-invoice - add-ons", () => {
     expect(sent.orderDescription).toBe(
       "2 шт Послуги масажу 500 грн (Додатки: Композиція свічок); Послуги масажу 500 грн (Додатки: Збільшення часу сеансу). Доставка: Самовивіз зі студії"
     );
+    // Each card with its own add-ons right under it, so the buyer sees which is which
+    expect(sent.products).toEqual([
+      { name: "Послуги масажу 500 грн", price: 500, count: 2 },
+      { name: "Додаток до масажу «Композиція свічок у кабінет»", price: 125, count: 2 },
+      { name: "Послуги масажу 500 грн", price: 500, count: 1 },
+      { name: "Додаток до масажу «Збільшення часу сеансу»", price: 750, count: 1 },
+    ]);
   });
 
   it("rejects an add-on the product does not offer", async () => {
@@ -346,6 +359,8 @@ describe("POST /api/create-invoice - delivery", () => {
     expect(sent.orderDescription).toBe(
       "2 шт Послуги масажу 500 грн. Доставка: Нова пошта: Львів, Відділення №5, Олена Петренко +380501234567"
     );
+    // The delivery stays out of the fiscal receipt
+    expect(sent.products).toEqual([{ name: "Послуги масажу 500 грн", price: 500, count: 2 }]);
   });
 
   it("omits the client token when the service sends none", async () => {

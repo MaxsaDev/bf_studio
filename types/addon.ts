@@ -17,7 +17,7 @@ export interface Addon {
   id: AddonId;
   /** Short title shown in the checkout and in the order summary */
   title: string;
-  /** Name for the fiscal receipt (from the sheet, kept for the payment service) */
+  /** Line on the buyer's fiscal receipt: 'Додаток до масажу «Масаж стоп»' (lib/receipt.ts) */
   fiscalTitle: string;
   /** UAH per unit. Certificate discounts never apply to add-ons */
   price: number;

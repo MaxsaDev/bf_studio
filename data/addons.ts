@@ -3,47 +3,52 @@ import type { Addon, AddonId, AddonLimits } from "@/types/addon";
 /**
  * Source: "bf-card-additions" sheet, rows 1-3 (title, fiscal name, price).
  * Array order is the display order in checkout and on the card.
+ *
+ * `fiscalTitle` is the line WayForPay prints on the buyer's fiscal receipt
+ * (lib/receipt.ts). The sheet writes it with straight quotes; «» is used
+ * instead: correct Ukrainian typography, and no quote escaping in the payment
+ * callback, which reaches bf-back-v2 as hand-stitched JSON.
  */
 export const addons: Addon[] = [
   {
     id: "foot_massage",
     title: "Масаж стоп",
-    fiscalTitle: 'Додаток до масажу "Масаж стоп"',
+    fiscalTitle: "Додаток до масажу «Масаж стоп»",
     price: 400,
     icon: "/addons/foot-massage.svg",
   },
   {
     id: "hand_massage",
     title: "Масаж долонь",
-    fiscalTitle: 'Додаток до масажу "Масаж долонь"',
+    fiscalTitle: "Додаток до масажу «Масаж долонь»",
     price: 400,
     icon: "/addons/hand-massage.svg",
   },
   {
     id: "head_massage",
     title: "Масаж голови",
-    fiscalTitle: 'Додаток до масажу "Масаж голови"',
+    fiscalTitle: "Додаток до масажу «Масаж голови»",
     price: 400,
     icon: "/addons/head-massage.svg",
   },
   {
     id: "aroma_oils",
     title: "Ефірні олії",
-    fiscalTitle: 'Додаток до масажу "Ефірна олія"',
+    fiscalTitle: "Додаток до масажу «Ефірна олія»",
     price: 100,
     icon: "/addons/aroma-oils.svg",
   },
   {
     id: "candles",
     title: "Композиція свічок",
-    fiscalTitle: 'Додаток до масажу "Композиція свічок у кабінет"',
+    fiscalTitle: "Додаток до масажу «Композиція свічок у кабінет»",
     price: 125,
     icon: "/addons/candles.svg",
   },
   {
     id: "extra_time",
     title: "Збільшення часу сеансу",
-    fiscalTitle: 'Додаток до масажу "Збільшення часу сеансу"',
+    fiscalTitle: "Додаток до масажу «Збільшення часу сеансу»",
     price: 750,
     icon: "/addons/extra-time.svg",
   },
