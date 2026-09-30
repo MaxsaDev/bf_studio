@@ -69,8 +69,13 @@ export function usePendingShipment(): ShipmentUiState {
         }
 
         if (result.ok && result.data.status === "pending") {
-          // Payment not confirmed yet - keep the entry, retry shortly, then on the next visit
-          setState({ kind: "awaiting_payment" });
+          // Not ready yet - keep the entry, retry shortly, then on the next visit.
+          // "paid": the payment webhook is creating the waybill right now
+          setState(
+            result.data.paymentStatus === "paid"
+              ? { kind: "processing" }
+              : { kind: "awaiting_payment" }
+          );
           if (attempt >= PENDING_RETRY_DELAYS_MS.length) return;
           await wait(PENDING_RETRY_DELAYS_MS[attempt]);
           if (cancelled) return;

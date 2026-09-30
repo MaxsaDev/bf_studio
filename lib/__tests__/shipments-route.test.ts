@@ -104,6 +104,15 @@ describe("POST /api/shipments", () => {
     await expect(res.json()).resolves.toEqual({ status: "pending", paymentStatus: "created" });
   });
 
+  it("passes a paid order's pending state through while the payment webhook creates the waybill", async () => {
+    fetchMock.mockResolvedValueOnce(
+      upstream(202, { success: true, data: { status: "pending", paymentStatus: "paid" } })
+    );
+    const res = await POST(request({ orderReference: "o2b", clientToken: TOKEN }));
+    expect(res.status).toBe(202);
+    await expect(res.json()).resolves.toEqual({ status: "pending", paymentStatus: "paid" });
+  });
+
   it("reports pickup orders as failed so the browser drops its entry", async () => {
     fetchMock.mockResolvedValueOnce(
       upstream(200, { success: true, data: { status: "not_applicable", delivery: { method: "pickup" } } })
