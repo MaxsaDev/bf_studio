@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { addons } from "@/data/addons";
+import { certificates } from "@/data/certificates";
 import { resolveCart } from "@/lib/cart";
 import { buildReceiptLines, receiptTotalKop } from "@/lib/receipt";
 import type { AddonSelection } from "@/types/addon";
@@ -33,6 +34,16 @@ describe("buildReceiptLines", () => {
     expect(receiptFor([line(1, { variantId: "basic" })])).toEqual([
       { name: "Курс (10 сеансів) - Корекція фігури Основна", price: 13300, count: 1 },
     ]);
+  });
+
+  it("prints every gift certificate as 'Послуги масажу <номінал> грн' at face value", () => {
+    const gifts = certificates.filter((c) => c.type === "gift_certificate");
+    expect(gifts.map((c) => c.denomination)).toEqual([500, 1000, 2000, 3000, 5000, 10000, 20000]);
+    for (const gift of gifts) {
+      expect(receiptFor([line(gift.id)])).toEqual([
+        { name: `Послуги масажу ${gift.denomination} грн`, price: gift.denomination, count: 1 },
+      ]);
+    }
   });
 
   it("gives every add-on its own line under the fiscal name", () => {

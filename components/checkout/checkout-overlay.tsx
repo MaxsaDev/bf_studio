@@ -46,8 +46,8 @@ import {
   NAMED_CERT_TITLE_SIZE,
   NAMED_CERT_TITLE_SIZE_COMPACT,
   NAMED_CERTIFICATE_BACKGROUND,
-  GIFT_CERT_DENOMINATION_SIZE,
-  GIFT_CERT_DENOMINATION_SIZE_COMPACT,
+  giftDenominationSize,
+  isLongDenomination,
   GIFT_CERT_CURRENCY_SIZE,
   GIFT_CERT_CURRENCY_SIZE_COMPACT,
   getNamedCertificateColor,
@@ -178,9 +178,7 @@ function getVisualProps(
           <div className="flex items-start justify-center leading-[0.8] -space-x-2 ml-8">
             <span
               className={cn(
-                compact
-                  ? GIFT_CERT_DENOMINATION_SIZE_COMPACT
-                  : GIFT_CERT_DENOMINATION_SIZE,
+                giftDenominationSize(certificate.denomination, compact),
                 "font-bold tracking-tighter text-stone-900 dark:text-stone-50"
               )}
             >
@@ -189,7 +187,10 @@ function getVisualProps(
             <span
               className={cn(
                 compact ? GIFT_CERT_CURRENCY_SIZE_COMPACT : GIFT_CERT_CURRENCY_SIZE,
-                "font-medium text-stone-500 dark:text-stone-400 mt-4 sm:mt-6 tracking-widest"
+                "font-medium text-stone-500 dark:text-stone-400 tracking-widest",
+                compact && isLongDenomination(certificate.denomination)
+                  ? "mt-2 sm:mt-4"
+                  : "mt-4 sm:mt-6"
               )}
             >
               UAH

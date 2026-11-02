@@ -102,9 +102,37 @@ export const GIFT_CERT_DENOMINATION_SIZE_COMPACT = "text-[3.5rem] sm:text-[5.5re
 export const GIFT_CERT_CURRENCY_SIZE_COMPACT = "text-lg sm:text-2xl";
 export const NAMED_CERT_TITLE_SIZE_COMPACT = "text-[1.75rem] sm:text-[3rem]";
 
+/**
+ * Five-digit denominations at 0.8 × the size above: same width as four digits,
+ * so they fit everywhere a four-digit card fits
+ */
+export const GIFT_CERT_DENOMINATION_SIZE_LONG = "text-[4.8rem] sm:text-[6.4rem]";
+export const GIFT_CERT_DENOMINATION_SIZE_LONG_COMPACT = "text-[2.8rem] sm:text-[4.4rem]";
+
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
+
+/** Five digits or more: gets the smaller gift card title */
+export function isLongDenomination(denomination: number): boolean {
+  return denomination >= 10000;
+}
+
+/**
+ * Denomination size for a gift card; `compact` when sticker columns flank it
+ */
+export function giftDenominationSize(
+  denomination: number,
+  compact = false
+): string {
+  const long = isLongDenomination(denomination);
+  if (compact) {
+    return long
+      ? GIFT_CERT_DENOMINATION_SIZE_LONG_COMPACT
+      : GIFT_CERT_DENOMINATION_SIZE_COMPACT;
+  }
+  return long ? GIFT_CERT_DENOMINATION_SIZE_LONG : GIFT_CERT_DENOMINATION_SIZE;
+}
 
 /**
  * Get color for named certificate by theme name

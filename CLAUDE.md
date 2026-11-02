@@ -83,7 +83,7 @@ Components follow a domain-driven structure:
 - **`data/certificates.ts`** - Static certificate data array. Each product (or course variant) carries `addons`: max quantity per add-on id — omit to offer none (master classes)
   - Massage courses - each has a `variants` array (e.g. "1 Сеанс" / "6 Сеансів" / "10 Сеансів") with per-variant price, sessions count, and optional discount
   - Special certificates (`type: "special"`) - one-off sessions (couples massage, hot stones, etc.) with flat `price`
-  - Gift certificates - `denomination` doubles as the price (no separate `price` field)
+  - Gift certificates - `denomination` doubles as the price (no separate `price` field). `description` is the fiscal receipt line and must stay "Послуги масажу <denomination> грн". Five-digit denominations use a smaller title (`giftDenominationSize()` in `lib/certificate-config.ts`)
   - Named gift certificates - gemstone-themed (Смарагдовий/Сапфіровий/Рубіновий), `denomination` doubles as the price
   - Master classes - flat `price`
   - Any certificate or course variant can have a `discount` object (`percentage`, optional `label`, optional `endDate`)

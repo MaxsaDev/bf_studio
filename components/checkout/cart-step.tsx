@@ -217,7 +217,7 @@ function CartLineRow({
             </button>
           )}
         </div>
-        <span className="text-base font-bold tabular-nums text-stone-900 dark:text-stone-100">
+        <span className="shrink-0 whitespace-nowrap text-base font-bold tabular-nums text-stone-900 dark:text-stone-100">
           {lineTotal} ₴
         </span>
       </div>

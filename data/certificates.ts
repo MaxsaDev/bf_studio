@@ -250,6 +250,20 @@ export const certificates: Certificate[] = [
     addons: ADDONS_SINGLE,
   },
   {
+    id: 26,
+    type: "gift_certificate",
+    denomination: 10000,
+    description: "Послуги масажу 10000 грн",
+    addons: ADDONS_SINGLE,
+  },
+  {
+    id: 27,
+    type: "gift_certificate",
+    denomination: 20000,
+    description: "Послуги масажу 20000 грн",
+    addons: ADDONS_SINGLE,
+  },
+  {
     id: 14,
     type: "named_gift_certificate",
     denomination: 2000,

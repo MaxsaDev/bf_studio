@@ -34,7 +34,7 @@ describe("catalog", () => {
 
 describe("getAvailableAddons — mirrors the bf-card-additions sheet", () => {
   it("gift and named certificates offer one of each", () => {
-    for (const id of [9, 10, 11, 12, 13, 14, 15, 16]) {
+    for (const id of [9, 10, 11, 12, 13, 26, 27, 14, 15, 16]) {
       const available = getAvailableAddons(cert(id));
       expect(available).toHaveLength(6);
       expect(available.every((a) => a.maxQty === 1)).toBe(true);

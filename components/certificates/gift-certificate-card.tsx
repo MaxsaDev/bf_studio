@@ -7,8 +7,8 @@ import {
   CERTIFICATE_IMAGE,
   CERTIFICATE_IMAGE_DARK_OVERLAY,
   CERTIFICATE_MAX_WIDTH,
-  GIFT_CERT_DENOMINATION_SIZE,
   GIFT_CERT_CURRENCY_SIZE,
+  giftDenominationSize,
 } from "@/lib/certificate-config";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +30,7 @@ export function GiftCertificateCard({
       <CertificateCardVisual
         title={
           <div className="flex items-start justify-center leading-[0.8] -space-x-2 ml-8">
-            <span className={cn(GIFT_CERT_DENOMINATION_SIZE, "font-bold tracking-tighter text-stone-900 dark:text-stone-50")}>
+            <span className={cn(giftDenominationSize(certificate.denomination), "font-bold tracking-tighter text-stone-900 dark:text-stone-50")}>
               {certificate.denomination}
             </span>
             <span className={cn(GIFT_CERT_CURRENCY_SIZE, "font-medium text-stone-500 dark:text-stone-400 mt-4 sm:mt-6 tracking-widest")}>
