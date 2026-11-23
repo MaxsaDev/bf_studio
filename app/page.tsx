@@ -22,6 +22,8 @@ import {
 } from "@/lib/animation-config";
 import { track } from "@/lib/analytics";
 import { getAvailableAddons } from "@/lib/addons";
+import { BLACK_FRIDAY_LABEL } from "@/lib/black-friday";
+import { useBlackFriday } from "@/components/theme-provider";
 import { resolveCart } from "@/lib/cart";
 import { useCart } from "@/lib/use-cart";
 import { CartButton } from "@/components/checkout/cart-button";
@@ -38,7 +40,8 @@ const CheckoutOverlay = dynamic(
 
 export default function Home() {
   const cart = useCart();
-  const cartTotal = useMemo(() => resolveCart(cart.lines).total, [cart.lines]);
+  const blackFriday = useBlackFriday();
+  const cartTotal = useMemo(() => resolveCart(cart.lines, blackFriday).total, [cart.lines, blackFriday]);
   const [pendingProduct, setPendingProduct] = useState<PendingProduct | null>(null);
   const [checkoutScreen, setCheckoutScreen] = useState<CheckoutScreen>("cart");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -135,7 +138,7 @@ export default function Home() {
                 }}
                 className="text-xs font-bold tracking-[0.3em] text-stone-500 uppercase"
               >
-                The Collection
+                {blackFriday ? BLACK_FRIDAY_LABEL : "The Collection"}
               </motion.p>
             </div>
 
@@ -167,8 +170,9 @@ export default function Home() {
                 }}
                 className="text-sm sm:text-base text-stone-500 dark:text-stone-400 max-w-md mx-auto leading-relaxed"
               >
-                Подаруйте справжню турботу про тіло та емоції, обравши вишуканий
-                подарунок для тих, кого любите.
+                {blackFriday
+                  ? "Знижки 10–15% на всі сертифікати. Оберіть масаж, курс або подарункову BFCard."
+                  : "Подаруйте справжню турботу про тіло та емоції, обравши вишуканий подарунок для тих, кого любите."}
               </motion.p>
             </div>
           </motion.div>

@@ -10,7 +10,9 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { CERTIFICATE_IMAGE } from "@/lib/certificate-config";
+import { BLACK_FRIDAY_LABEL } from "@/lib/black-friday";
+import { useBlackFriday } from "@/components/theme-provider";
+import { certificateImage } from "@/lib/certificate-config";
 
 /** An add-on sticker shown on the card face */
 export interface CardSticker {
@@ -87,10 +89,8 @@ interface CertificateCardVisualProps {
   subtitle?: ReactNode;
   subtitleColor?: string;
   description?: string;
-  imageSrc?: string;
   className?: string;
   layoutId?: string;
-  isDark?: boolean;
   /** Preload the background image — set only for the initially visible card */
   imagePriority?: boolean;
   /**
@@ -107,13 +107,12 @@ export function CertificateCardVisual({
   subtitle,
   subtitleColor,
   description,
-  imageSrc = CERTIFICATE_IMAGE,
   className,
   layoutId,
-  isDark = false,
   imagePriority = false,
   stickers,
 }: CertificateCardVisualProps) {
+  const isDark = useBlackFriday();
   const hasStickerArea = stickers !== undefined;
   // Tilt Logic
   const ref = useRef<HTMLDivElement>(null);
@@ -171,7 +170,7 @@ export function CertificateCardVisual({
         rotateY,
       }}
       className={cn(
-        "relative aspect-1115/700 w-full rounded-xl overflow-hidden transition-shadow duration-300",
+        "@container relative aspect-1115/700 w-full rounded-xl overflow-hidden transition-shadow duration-300",
         isDark
           ? "shadow-2xl shadow-black/40" // Strong dark shadow for black cards
           : "shadow-xl shadow-stone-200/50 dark:shadow-black/50", // Standard shadow for light cards
@@ -187,8 +186,8 @@ export function CertificateCardVisual({
         {/* Background Image */}
         <div className="absolute inset-0 rounded-xl overflow-hidden">
           <Image
-            src={imageSrc}
-            alt="Certificate Background"
+            src={certificateImage(isDark)}
+            alt=""
             fill
             className="object-cover"
             sizes="(max-width: 768px) 95vw, 500px"
@@ -252,6 +251,12 @@ export function CertificateCardVisual({
           }}
           className="absolute inset-0 z-20 pointer-events-none mix-blend-soft-light"
         />
+      )}
+
+      {isDark && (
+        <span className="absolute left-[4%] top-[4%] z-30 text-[clamp(7px,2.2cqw,12px)] font-semibold tracking-wide text-amber-200">
+          {BLACK_FRIDAY_LABEL}
+        </span>
       )}
 
       {/* Content Layer - Floats above */}

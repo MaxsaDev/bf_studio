@@ -4,8 +4,6 @@ import { MasterClassCertificate } from "@/types/certificate";
 import { CertificateCardVisual } from "./certificate-card-visual";
 import { CertificateCardControls } from "./certificate-card-controls";
 import {
-  CERTIFICATE_IMAGE,
-  CERTIFICATE_IMAGE_DARK_OVERLAY,
   CERTIFICATE_MAX_WIDTH,
   MASTER_CLASS_SUBTITLE,
   MASTER_CLASS_SUBTITLE_COLOR,
@@ -32,14 +30,11 @@ export function MasterClassCard({
         subtitle={MASTER_CLASS_SUBTITLE}
         subtitleColor={MASTER_CLASS_SUBTITLE_COLOR}
         layoutId={`card-visual-${certificate.id}`}
-        imageSrc={CERTIFICATE_IMAGE}
-        isDark={CERTIFICATE_IMAGE_DARK_OVERLAY}
         imagePriority={imagePriority}
       />
 
       <CertificateCardControls
-        price={certificate.price}
-        discount={certificate.discount}
+        certificate={certificate}
         onBuy={() => onSelect?.(certificate)}
         isActive={isActive}
       />

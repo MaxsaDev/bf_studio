@@ -5,8 +5,6 @@ import { MassageCourseCertificate } from "@/types/certificate";
 import { CertificateCardVisual } from "./certificate-card-visual";
 import { CertificateCardControls } from "./certificate-card-controls";
 import {
-  CERTIFICATE_IMAGE,
-  CERTIFICATE_IMAGE_DARK_OVERLAY,
   CERTIFICATE_MAX_WIDTH,
 } from "@/lib/certificate-config";
 import { cn } from "@/lib/utils";
@@ -46,14 +44,11 @@ export function MassageCourseCard({
             : `${selectedVariant.sessions} сеансів`
         }
         layoutId={`card-visual-${certificate.id}`}
-        imageSrc={CERTIFICATE_IMAGE}
-        isDark={CERTIFICATE_IMAGE_DARK_OVERLAY}
         imagePriority={imagePriority}
       />
 
       <CertificateCardControls
-        price={selectedVariant.price}
-        discount={selectedVariant.discount}
+        certificate={certificate}
         variants={certificate.variants}
         selectedVariantId={selectedVariantId}
         onVariantChange={setSelectedVariantId}

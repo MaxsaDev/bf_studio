@@ -4,14 +4,13 @@ import { NamedGiftCertificate } from "@/types/certificate";
 import { CertificateCardVisual } from "./certificate-card-visual";
 import { CertificateCardControls } from "./certificate-card-controls";
 import {
-  CERTIFICATE_IMAGE,
-  CERTIFICATE_IMAGE_DARK_OVERLAY,
   CERTIFICATE_MAX_WIDTH,
   NAMED_CERT_TITLE_SIZE,
   NAMED_CERTIFICATE_BACKGROUND,
   getNamedCertificateColor,
   extractThemeName,
 } from "@/lib/certificate-config";
+import { useBlackFriday } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -27,8 +26,9 @@ export function NamedGiftCertificateCard({
   isActive = true,
   imagePriority = false,
 }: Props) {
+  const blackFriday = useBlackFriday();
   const themeName = extractThemeName(certificate.title);
-  const themeColor = getNamedCertificateColor(themeName);
+  const themeColor = getNamedCertificateColor(themeName, blackFriday);
 
   return (
     <div
@@ -49,14 +49,11 @@ export function NamedGiftCertificateCard({
         subtitle={`${certificate.denomination} ₴`}
         className={NAMED_CERTIFICATE_BACKGROUND}
         layoutId={`card-visual-${certificate.id}`}
-        imageSrc={CERTIFICATE_IMAGE}
-        isDark={CERTIFICATE_IMAGE_DARK_OVERLAY}
         imagePriority={imagePriority}
       />
 
       <CertificateCardControls
-        price={certificate.denomination}
-        discount={certificate.discount}
+        certificate={certificate}
         onBuy={() => onSelect?.(certificate)}
         isActive={isActive}
       />

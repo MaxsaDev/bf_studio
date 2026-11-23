@@ -19,9 +19,10 @@ export interface ResolvedOrder extends ResolvedPrice {
 export function resolveOrder(
   certificate: Certificate,
   variantId: string | null | undefined,
-  addonLines: AddonLine[] = []
+  addonLines: AddonLine[] = [],
+  blackFriday = false
 ): ResolvedOrder {
-  const price = resolvePrice(certificate, variantId);
+  const price = resolvePrice(certificate, variantId, blackFriday);
   const addonsTotal = sumAddonLines(addonLines);
 
   return {

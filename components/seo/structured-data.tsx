@@ -1,6 +1,6 @@
 import { certificates } from "@/data/certificates";
-import { CERTIFICATE_IMAGE } from "@/lib/certificate-config";
-import { resolvePrice, applyDiscount } from "@/lib/pricing";
+import { certificateImage } from "@/lib/certificate-config";
+import { resolvePrice } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site-config";
 import type { Certificate } from "@/types/certificate";
 
@@ -19,26 +19,23 @@ const SECTION_BY_TYPE: Record<Certificate["type"], string> = {
  * JSON-LD Product/Offer markup for every certificate — enables
  * rich results (price snippets) in search. Server component.
  */
-export function StructuredData() {
+export function StructuredData({ blackFriday }: { blackFriday: boolean }) {
+  const image = SITE_URL + certificateImage(blackFriday);
   const products = certificates.map((certificate) => {
-    const resolved = resolvePrice(certificate, null);
+    const resolved = resolvePrice(certificate, null, blackFriday);
+
+    const variantPrices = certificate.type === "massage_course"
+      ? certificate.variants.map((v) => resolvePrice(certificate, v.id, blackFriday).finalPrice)
+      : [];
 
     const offers =
       certificate.type === "massage_course"
         ? {
             "@type": "AggregateOffer",
             priceCurrency: "UAH",
-            lowPrice: Math.min(
-              ...certificate.variants.map((v) =>
-                applyDiscount(v.price, v.discount ?? certificate.discount)
-              )
-            ),
-            highPrice: Math.max(
-              ...certificate.variants.map((v) =>
-                applyDiscount(v.price, v.discount ?? certificate.discount)
-              )
-            ),
-            offerCount: certificate.variants.length,
+            lowPrice: Math.min(...variantPrices),
+            highPrice: Math.max(...variantPrices),
+            offerCount: variantPrices.length,
             availability: "https://schema.org/InStock",
           }
         : {
@@ -53,7 +50,7 @@ export function StructuredData() {
       name: resolved.itemTitle,
       description: certificate.description,
       sku: `cert-${certificate.id}`,
-      image: `${SITE_URL}${CERTIFICATE_IMAGE}`,
+      image,
       url: `${SITE_URL}/#${SECTION_BY_TYPE[certificate.type]}`,
       brand: {
         "@type": "Brand",
@@ -71,7 +68,7 @@ export function StructuredData() {
         name: siteConfig.business.name,
         description: siteConfig.business.description,
         url: SITE_URL,
-        image: `${SITE_URL}${CERTIFICATE_IMAGE}`,
+        image,
         telephone: siteConfig.contact.phone.raw,
         address: {
           "@type": "PostalAddress",

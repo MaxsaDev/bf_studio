@@ -25,6 +25,8 @@ export interface CreateInvoiceItem {
 
 export interface CreateInvoiceRequest {
   items: CreateInvoiceItem[];
+  /** Price terms displayed to the buyer, checked against the server clock. */
+  blackFriday: boolean;
   name: string;
   /** +380XXXXXXXXX - see formatPhoneForAPI() */
   phone: string;
@@ -41,6 +43,8 @@ export interface CreateInvoiceResponse {
    */
   clientToken?: string;
 }
+
+export class CartPricesChangedError extends Error {}
 
 const FALLBACK_ERROR =
   "Не вдалося створити рахунок для оплати. Спробуйте ще раз.";
@@ -63,7 +67,11 @@ export async function createPaymentInvoice(
   const result = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(result?.error?.message || FALLBACK_ERROR);
+    const message = result?.error?.message || FALLBACK_ERROR;
+    if (response.status === 409 && result?.error?.code === "CART_PRICES_CHANGED") {
+      throw new CartPricesChangedError(message);
+    }
+    throw new Error(message);
   }
 
   return result;

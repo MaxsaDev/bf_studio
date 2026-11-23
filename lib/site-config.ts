@@ -40,22 +40,8 @@ export const siteConfig = {
    */
   certificate: {
     validity: {
-      // Standard validity period
-      months: 3,
-      days: 90,
-
-      // Display text for UI
-      displayText: "3 місяці",
-
-      // Full note shown on success page
-      note: "Строк дії BFCard - 3 місяці з дати оплати. Не забудьте записатися на сеанс завчасно, щоб гарантувати зручний для вас час.",
-
-      // For special promotions (Black Friday, etc.)
-      // Uncomment and modify these during promotions:
-      isPromotion: false,
-      promotionLabel: "Чорна п'ятниця 2025",
-      promotionNote:
-        "Строк отримання послуги - 6 місяців з дати оплати. Не забудьте записатися на сеанс завчасно, щоб гарантувати зручний для вас час.",
+      // The payment provider can return a buyer after the campaign has ended.
+      note: "Стандартна BFCard діє 3 місяці з дати оплати. Для картки з маркуванням «Чорна п’ятниця» строк дії становить 6 місяців з дати оплати.",
     },
   },
 

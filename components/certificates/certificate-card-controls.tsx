@@ -3,12 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Discount, CertificateVariant } from "@/types/certificate";
-import { applyDiscount, formatDiscountEndDate } from "@/lib/pricing";
+import { useBlackFriday } from "@/components/theme-provider";
+import type { Certificate, CertificateVariant } from "@/types/certificate";
+import { resolvePrice, formatDiscountEndDate } from "@/lib/pricing";
 
 interface CertificateCardControlsProps {
-  price: number;
-  discount?: Discount;
+  certificate: Certificate;
   variants?: CertificateVariant[];
   selectedVariantId?: string;
   onVariantChange?: (variantId: string) => void;
@@ -18,8 +18,7 @@ interface CertificateCardControlsProps {
 }
 
 export function CertificateCardControls({
-  price,
-  discount,
+  certificate,
   variants,
   selectedVariantId,
   onVariantChange,
@@ -27,7 +26,8 @@ export function CertificateCardControls({
   className,
   isActive = true,
 }: CertificateCardControlsProps) {
-  const finalPrice = applyDiscount(price, discount);
+  const blackFriday = useBlackFriday();
+  const { basePrice, finalPrice, discount } = resolvePrice(certificate, selectedVariantId, blackFriday);
   const discountDeadline = discount?.endDate
     ? formatDiscountEndDate(discount.endDate)
     : null;
@@ -81,11 +81,11 @@ export function CertificateCardControls({
       )}
 
       {/* Price & Action */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4">
         <div className="flex flex-col">
           {discount && (
-            <div className="flex items-center gap-2 text-sm font-medium text-stone-500 dark:text-stone-400 line-through decoration-stone-400/50 dark:decoration-stone-500/50">
-              <span>{price} ₴</span>
+            <div className="flex items-center gap-2 text-sm font-medium text-stone-500 dark:text-stone-400">
+              <span className="line-through decoration-stone-400/50 dark:decoration-stone-500/50">{basePrice} ₴</span>
               <span className="no-underline text-xs px-1.5 py-0.5 rounded-sm bg-stone-200 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold">
                 {discount.label ?? `-${discount.percentage}%`}
               </span>
@@ -119,7 +119,7 @@ export function CertificateCardControls({
         <Button
           onClick={onBuy}
           disabled={!isActive}
-          className="h-14 px-10 rounded-full bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 text-lg font-bold shadow-lg shadow-stone-900/10 hover:scale-105 active:scale-95 transition-all duration-300 font-sans"
+          className="h-14 px-4 sm:px-10 rounded-full bg-stone-900 dark:bg-stone-50 text-stone-50 dark:text-stone-900 text-lg font-bold shadow-lg shadow-stone-900/10 hover:scale-105 active:scale-95 transition-all duration-300 font-sans"
         >
           Придбати
         </Button>

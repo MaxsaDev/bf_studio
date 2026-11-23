@@ -3,7 +3,9 @@ import localFont from "next/font/local";
 import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { THEME_MODE } from "@/lib/theme-config";
+import { blackFridaySchedule } from "@/lib/black-friday";
+import { certificateImage } from "@/lib/certificate-config";
+import { cache } from "react";
 import { StructuredData } from "@/components/seo/structured-data";
 
 const evolventa = localFont({
@@ -38,69 +40,71 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Body Factory Studio | Premium",
-    // Sub-pages export a plain title and get the brand suffix for free
-    template: "%s | Body Factory",
-  },
-  description: "Оберіть ідеальний подарунок на масаж у Body Factory",
-  keywords: [
-    "Body Factory",
-    "Body Factory Studio",
-    "Premium",
-    "Масаж",
-    "Масаж у Body Factory",
-    "Масаж у Body Factory Studio",
-    "Масаж у Body Factory Premium",
-  ],
-  authors: [{ name: "Body Factory", url: "https://bodyfactory.studio/" }],
-  creator: "Body Factory",
-  publisher: "Body Factory",
-  metadataBase: new URL("https://bodyfactory.studio/"),
-  openGraph: {
-    title: "Body Factory Studio | Premium",
+// The shop and its offers must reflect the request time, including after a cutoff.
+export const dynamic = "force-dynamic";
+const requestCampaign = cache(() => blackFridaySchedule());
+
+export function generateMetadata(): Metadata {
+  const image = certificateImage(requestCampaign().active);
+  return {
+    title: {
+      default: "Body Factory Studio | Premium",
+      // Sub-pages export a plain title and get the brand suffix for free
+      template: "%s | Body Factory",
+    },
     description: "Оберіть ідеальний подарунок на масаж у Body Factory",
-    locale: "uk_UA",
-    type: "website",
-    images: [
-      {
-        url: "/bf_card_white_template.jpg",
-        width: 1115,
-        height: 700,
-        alt: "Body Factory подарунковий сертифікат",
-      },
+    keywords: [
+      "Body Factory",
+      "Body Factory Studio",
+      "Premium",
+      "Масаж",
+      "Масаж у Body Factory",
+      "Масаж у Body Factory Studio",
+      "Масаж у Body Factory Premium",
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Body Factory Studio | Premium",
-    description: "Оберіть ідеальний подарунок на масаж у Body Factory",
-    images: ["/bf_card_white_template.jpg"],
-  },
-  manifest: "/site.webmanifest",
-};
+    authors: [{ name: "Body Factory", url: "https://bodyfactory.studio/" }],
+    creator: "Body Factory",
+    publisher: "Body Factory",
+    metadataBase: new URL("https://bodyfactory.studio/"),
+    openGraph: {
+      title: "Body Factory Studio | Premium",
+      description: "Оберіть ідеальний подарунок на масаж у Body Factory",
+      locale: "uk_UA",
+      type: "website",
+      images: [
+        {
+          url: image,
+          width: 1115,
+          height: 700,
+          alt: "Body Factory подарунковий сертифікат",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Body Factory Studio | Premium",
+      description: "Оберіть ідеальний подарунок на масаж у Body Factory",
+      images: [image],
+    },
+    manifest: "/site.webmanifest",
+  };
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const campaign = requestCampaign();
   return (
-    <html lang="uk" suppressHydrationWarning>
+    <html lang="uk" className={campaign.active ? "dark" : undefined} suppressHydrationWarning>
       <head>
-        <StructuredData />
+        <StructuredData blackFriday={campaign.active} />
       </head>
       <body
         className={`${evolventa.variable} ${playfair.variable} antialiased font-sans selection:bg-stone-200 dark:selection:bg-stone-800`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme={THEME_MODE}
-          forcedTheme={THEME_MODE}
-          enableSystem={false}
-          disableTransitionOnChange
-        >
+        <ThemeProvider {...campaign}>
           {children}
         </ThemeProvider>
       </body>

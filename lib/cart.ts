@@ -152,7 +152,7 @@ export interface ResolvedCart {
  * off), quantity is clamped. The payment route validates strictly first, so
  * for a valid request this is exact.
  */
-export function resolveCartLine(line: CartLine): ResolvedCartLine | null {
+export function resolveCartLine(line: CartLine, blackFriday = false): ResolvedCartLine | null {
   const certificate = certificates.find((c) => c.id === line.certificateId);
   if (!certificate) return null;
 
@@ -165,7 +165,7 @@ export function resolveCartLine(line: CartLine): ResolvedCartLine | null {
   const addonLines = isAddonUpsellEnabled()
     ? resolveAddonLines(certificate, variantId, addonsToQuantities(line.addons))
     : [];
-  const order = resolveOrder(certificate, variantId, addonLines);
+  const order = resolveOrder(certificate, variantId, addonLines, blackFriday);
   const qty = clampLineQty(line.qty);
 
   return {
@@ -184,9 +184,9 @@ export function resolveCartLine(line: CartLine): ResolvedCartLine | null {
   };
 }
 
-export function resolveCart(lines: CartLine[]): ResolvedCart {
+export function resolveCart(lines: CartLine[], blackFriday = false): ResolvedCart {
   const resolved = lines.flatMap((line) => {
-    const r = resolveCartLine(line);
+    const r = resolveCartLine(line, blackFriday);
     return r ? [r] : [];
   });
   return {

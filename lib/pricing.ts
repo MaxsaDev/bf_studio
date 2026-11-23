@@ -28,13 +28,16 @@ export interface ResolvedPrice {
  */
 export function resolvePrice(
   certificate: Certificate,
-  variantId?: string | null
+  variantId?: string | null,
+  blackFriday = false
 ): ResolvedPrice {
   if (certificate.type === "massage_course") {
     const variant =
       certificate.variants.find((v) => v.id === variantId) ??
       certificate.variants[0];
-    const discount = variant.discount ?? certificate.discount;
+    const discount = blackFriday
+      ? { percentage: variant.sessions > 1 ? 15 : 10 }
+      : variant.discount ?? certificate.discount;
     return {
       basePrice: variant.price,
       finalPrice: applyDiscount(variant.price, discount),
@@ -53,6 +56,9 @@ export function resolvePrice(
       ? certificate.denomination
       : certificate.price;
 
+  const premiumGift = certificate.type === "gift_certificate" &&
+    (certificate.denomination === 10000 || certificate.denomination === 20000);
+  const discount = blackFriday ? { percentage: premiumGift ? 15 : 10 } : certificate.discount;
   const itemTitle =
     certificate.type === "gift_certificate"
       ? `Сертифікат на ${certificate.denomination} ₴`
@@ -60,8 +66,8 @@ export function resolvePrice(
 
   return {
     basePrice,
-    finalPrice: applyDiscount(basePrice, certificate.discount),
-    discount: certificate.discount,
+    finalPrice: applyDiscount(basePrice, discount),
+    discount,
     description: certificate.description,
     itemTitle,
   };

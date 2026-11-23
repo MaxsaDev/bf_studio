@@ -115,26 +115,12 @@ export function SuccessPaymentContent() {
 
               {/* Important note */}
               <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl p-6 mb-8 relative overflow-hidden">
-                {siteConfig.certificate.validity.isPromotion && (
-                  <div className="absolute -top-4 -right-4 opacity-10">
-                    <Sparkles className="w-24 h-24 text-amber-600 dark:text-amber-400" />
-                  </div>
-                )}
                 <div className="relative z-10">
                   <p className="text-sm font-medium text-amber-900 dark:text-amber-100 mb-2 flex items-center gap-2">
-                    {siteConfig.certificate.validity.isPromotion ? (
-                      <>
-                        <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                        {siteConfig.certificate.validity.promotionLabel}
-                      </>
-                    ) : (
-                      "Важлива інформація"
-                    )}
+                    Строк дії BFCard
                   </p>
                   <p className="text-sm text-amber-800 dark:text-amber-200/80 leading-relaxed">
-                    {siteConfig.certificate.validity.isPromotion
-                      ? siteConfig.certificate.validity.promotionNote
-                      : siteConfig.certificate.validity.note}
+                    {siteConfig.certificate.validity.note}
                   </p>
                 </div>
               </div>

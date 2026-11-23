@@ -4,8 +4,6 @@ import { GiftCertificate } from "@/types/certificate";
 import { CertificateCardVisual } from "./certificate-card-visual";
 import { CertificateCardControls } from "./certificate-card-controls";
 import {
-  CERTIFICATE_IMAGE,
-  CERTIFICATE_IMAGE_DARK_OVERLAY,
   CERTIFICATE_MAX_WIDTH,
   GIFT_CERT_CURRENCY_SIZE,
   giftDenominationSize,
@@ -29,24 +27,21 @@ export function GiftCertificateCard({
     <div className={cn("w-full mx-auto group perspective-1000")} style={{ maxWidth: CERTIFICATE_MAX_WIDTH }}>
       <CertificateCardVisual
         title={
-          <div className="flex items-start justify-center leading-[0.8] -space-x-2 ml-8">
+          <div className="flex items-center justify-center gap-[1cqw] leading-[0.8]">
             <span className={cn(giftDenominationSize(certificate.denomination), "font-bold tracking-tighter text-stone-900 dark:text-stone-50")}>
               {certificate.denomination}
             </span>
-            <span className={cn(GIFT_CERT_CURRENCY_SIZE, "font-medium text-stone-500 dark:text-stone-400 mt-4 sm:mt-6 tracking-widest")}>
+            <span className={cn(GIFT_CERT_CURRENCY_SIZE, "font-medium text-stone-500 dark:text-stone-400 tracking-widest")}>
               UAH
             </span>
           </div>
         }
         layoutId={`card-visual-${certificate.id}`}
-        imageSrc={CERTIFICATE_IMAGE}
-        isDark={CERTIFICATE_IMAGE_DARK_OVERLAY}
         imagePriority={imagePriority}
       />
 
       <CertificateCardControls
-        price={certificate.denomination}
-        discount={certificate.discount}
+        certificate={certificate}
         onBuy={() => onSelect?.(certificate)}
         isActive={isActive}
       />

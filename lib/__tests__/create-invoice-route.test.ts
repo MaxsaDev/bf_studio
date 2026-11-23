@@ -58,12 +58,16 @@ const npDelivery = {
 const sentBody = () => JSON.parse(fetchMock.mock.calls[0][1].body);
 
 beforeEach(() => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date("2026-11-22T12:00:00+02:00"));
   fetchMock.mockReset();
   vi.stubGlobal("fetch", fetchMock);
   vi.stubEnv("PAYMENT_SERVICE_API_KEY", "test-key");
+  vi.stubEnv("BF_BLACK_FRIDAY_2026_EXTENDED", "false");
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
 });
@@ -127,6 +131,43 @@ describe("POST /api/create-invoice - validation", () => {
 });
 
 describe("POST /api/create-invoice - price resolution", () => {
+  it("issues one discounted invoice and itemised receipt, with full-price add-ons", async () => {
+    vi.setSystemTime(new Date("2026-11-27T23:59:59+02:00"));
+    fetchMock.mockResolvedValueOnce(upstreamOk());
+
+    const res = await POST(makeRequest({
+      ...buyer,
+      blackFriday: true,
+      items: [
+        { certificateId: 1, variantId: "basic", addons: [{ id: "aroma_oils", qty: 2 }] },
+        { certificateId: 26, qty: 2 },
+        { certificateId: 17 },
+      ],
+    }));
+
+    expect(res.status).toBe(200);
+    const order = sentBody();
+    expect(order.amount).toBe(32475);
+    expect(order.items.map((item: { lineTotal: number }) => item.lineTotal)).toEqual([12100, 17000, 3375]);
+    expect(order.products.map((p: { price: number; count: number }) => [p.price, p.count]))
+      .toEqual([[11900, 1], [100, 2], [8500, 2], [3375, 1]]);
+    expect(order.orderDescription).toContain("Чорна п’ятниця 2026 · 6 місяців");
+  });
+
+  it("refuses stale prices at launch and rollback before creating an invoice", async () => {
+    const items = [{ certificateId: 1, variantId: "basic" }];
+    vi.setSystemTime(new Date("2026-11-23T08:00:00+02:00"));
+    expect((await POST(makeRequest({ ...buyer, items }))).status).toBe(409);
+    vi.setSystemTime(new Date("2026-11-28T00:00:00+02:00"));
+    expect((await POST(makeRequest({ ...buyer, items, blackFriday: true }))).status).toBe(409);
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    fetchMock.mockResolvedValueOnce(upstreamOk());
+    const res = await POST(makeRequest({ ...buyer, items, blackFriday: false }));
+    expect(res.status).toBe(200);
+    expect(sentBody().amount).toBe(13300);
+  });
+
   it("ignores any client-supplied amount and resolves the course variant price server-side", async () => {
     fetchMock.mockResolvedValueOnce(upstreamOk());
 

@@ -13,14 +13,9 @@
  * Certificate card background image
  * Used across all certificate types
  */
-export const CERTIFICATE_IMAGE = "/bf_card_white_template.jpg";
-
-/**
- * Image overlay darkness
- * true = darker overlay for better text contrast
- * false = lighter overlay
- */
-export const CERTIFICATE_IMAGE_DARK_OVERLAY = false;
+export function certificateImage(blackFriday: boolean): string {
+  return blackFriday ? "/bf_bf.jpg" : "/bf_card_white_template.jpg";
+}
 
 /**
  * Maximum card width in pixels
@@ -86,8 +81,8 @@ export const SPECIAL_CERTIFICATE_COLOR = "#d4af37";
 /**
  * Gift certificate denomination typography
  */
-export const GIFT_CERT_DENOMINATION_SIZE = "text-[6rem] sm:text-[8rem]";
-export const GIFT_CERT_CURRENCY_SIZE = "text-2xl sm:text-3xl";
+export const GIFT_CERT_DENOMINATION_SIZE = "text-[clamp(2rem,23cqw,8rem)]";
+export const GIFT_CERT_CURRENCY_SIZE = "text-[clamp(0.85rem,4cqw,1.875rem)]";
 
 /**
  * Named certificate title typography
@@ -98,16 +93,16 @@ export const NAMED_CERT_TITLE_SIZE = "text-[3rem] sm:text-[4rem]";
  * Narrower variants used in checkout when add-on stickers flank the title
  * (three per side, see CertificateCardVisual)
  */
-export const GIFT_CERT_DENOMINATION_SIZE_COMPACT = "text-[3.5rem] sm:text-[5.5rem]";
-export const GIFT_CERT_CURRENCY_SIZE_COMPACT = "text-lg sm:text-2xl";
+export const GIFT_CERT_DENOMINATION_SIZE_COMPACT = "text-[clamp(1.5rem,17cqw,5.5rem)]";
+export const GIFT_CERT_CURRENCY_SIZE_COMPACT = "text-[clamp(0.7rem,3.5cqw,1.5rem)]";
 export const NAMED_CERT_TITLE_SIZE_COMPACT = "text-[1.75rem] sm:text-[3rem]";
 
 /**
  * Five-digit denominations at 0.8 × the size above: same width as four digits,
  * so they fit everywhere a four-digit card fits
  */
-export const GIFT_CERT_DENOMINATION_SIZE_LONG = "text-[4.8rem] sm:text-[6.4rem]";
-export const GIFT_CERT_DENOMINATION_SIZE_LONG_COMPACT = "text-[2.8rem] sm:text-[4.4rem]";
+export const GIFT_CERT_DENOMINATION_SIZE_LONG = "text-[clamp(2rem,19cqw,6.4rem)]";
+export const GIFT_CERT_DENOMINATION_SIZE_LONG_COMPACT = "text-[clamp(1.25rem,14cqw,4.4rem)]";
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -138,8 +133,11 @@ export function giftDenominationSize(
  * Get color for named certificate by theme name
  */
 export function getNamedCertificateColor(
-  themeName: string
+  themeName: string,
+  darkCard = false
 ): string | undefined {
+  // The deep sapphire brand colour needs a lighter tint on the black card.
+  if (darkCard && themeName === "Сапфіровий") return "#62b6dc";
   return NAMED_CERTIFICATE_COLORS[themeName] ?? NAMED_CERTIFICATE_DEFAULT_COLOR;
 }
 

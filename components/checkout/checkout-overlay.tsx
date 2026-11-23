@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useBlackFriday } from "@/components/theme-provider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2, AlertCircle, X } from "lucide-react";
@@ -41,13 +43,10 @@ import { DeliveryFields } from "@/components/checkout/delivery-fields";
 import { OrderSummary } from "@/components/checkout/order-summary";
 import { cn } from "@/lib/utils";
 import {
-  CERTIFICATE_IMAGE,
-  CERTIFICATE_IMAGE_DARK_OVERLAY,
   NAMED_CERT_TITLE_SIZE,
   NAMED_CERT_TITLE_SIZE_COMPACT,
   NAMED_CERTIFICATE_BACKGROUND,
   giftDenominationSize,
-  isLongDenomination,
   GIFT_CERT_CURRENCY_SIZE,
   GIFT_CERT_CURRENCY_SIZE_COMPACT,
   getNamedCertificateColor,
@@ -59,6 +58,7 @@ import {
 } from "@/lib/certificate-config";
 import {
   createPaymentInvoice,
+  CartPricesChangedError,
   type CreateInvoiceRequest,
 } from "@/lib/api/payments";
 import { formatPhoneDisplay, formatPhoneForAPI } from "@/lib/phone";
@@ -143,8 +143,9 @@ interface VisualProps {
 /** `compact` narrows the big typographic titles when sticker columns are reserved */
 function getVisualProps(
   certificate: Certificate,
-  variantTitle?: string,
-  compact = false
+  variantTitle: string | undefined,
+  compact: boolean,
+  darkCard: boolean
 ): VisualProps {
   switch (certificate.type) {
     case "massage_course":
@@ -167,7 +168,7 @@ function getVisualProps(
             </span>
           </div>
         ),
-        titleColor: getNamedCertificateColor(themeName),
+        titleColor: getNamedCertificateColor(themeName, darkCard),
         subtitle: `${certificate.denomination} ₴`,
         className: NAMED_CERTIFICATE_BACKGROUND,
       };
@@ -175,7 +176,7 @@ function getVisualProps(
     case "gift_certificate":
       return {
         title: (
-          <div className="flex items-start justify-center leading-[0.8] -space-x-2 ml-8">
+          <div className="flex items-center justify-center gap-[1cqw] leading-[0.8]">
             <span
               className={cn(
                 giftDenominationSize(certificate.denomination, compact),
@@ -187,10 +188,7 @@ function getVisualProps(
             <span
               className={cn(
                 compact ? GIFT_CERT_CURRENCY_SIZE_COMPACT : GIFT_CERT_CURRENCY_SIZE,
-                "font-medium text-stone-500 dark:text-stone-400 tracking-widest",
-                compact && isLongDenomination(certificate.denomination)
-                  ? "mt-2 sm:mt-4"
-                  : "mt-4 sm:mt-6"
+                "font-medium text-stone-500 dark:text-stone-400 tracking-widest"
               )}
             >
               UAH
@@ -229,6 +227,9 @@ export default function CheckoutOverlay({
   pendingProduct,
   cart,
 }: CheckoutOverlayProps) {
+  const blackFriday = useBlackFriday();
+  const router = useRouter();
+  const [reviewedBlackFriday, setReviewedBlackFriday] = useState(blackFriday);
   const [screen, setScreen] = useState<CheckoutScreen>("cart");
   /** Cart line whose add-ons are being edited on the product screen */
   const [editingLineId, setEditingLineId] = useState<string | null>(null);
@@ -321,7 +322,7 @@ export default function CheckoutOverlay({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, handleClose]);
 
-  const resolvedCart = useMemo(() => resolveCart(cart.lines), [cart.lines]);
+  const resolvedCart = useMemo(() => resolveCart(cart.lines, blackFriday), [cart.lines, blackFriday]);
 
   // The card on the product screen: a fresh pick, or an existing line being edited
   const editingLine = editingLineId
@@ -342,12 +343,13 @@ export default function CheckoutOverlay({
     ? resolveAddonLines(configuring.certificate, configuring.variantId, quantities)
     : [];
   const configuredOrder = configuring
-    ? resolveOrder(configuring.certificate, configuring.variantId, configuredAddonLines)
+    ? resolveOrder(configuring.certificate, configuring.variantId, configuredAddonLines, blackFriday)
     : null;
 
   // Nothing to configure (e.g. stale state) → show the cart instead
+  const pricesChanged = screen === "payment" && reviewedBlackFriday !== blackFriday;
   const activeScreen: CheckoutScreen =
-    screen === "product" && !configuring ? "cart" : screen;
+    pricesChanged || (screen === "product" && !configuring) ? "cart" : screen;
 
   // Card floating above the dialog: the product being configured (stickers
   // preview). On the cart and payment screens only while the cart holds a
@@ -419,6 +421,8 @@ export default function CheckoutOverlay({
       cards: resolvedCart.count,
       amount: resolvedCart.total,
     });
+    setReviewedBlackFriday(blackFriday);
+    setSubmitError(null);
     setScreen("payment");
   };
 
@@ -442,6 +446,7 @@ export default function CheckoutOverlay({
     try {
       // Only WHAT is bought goes over the wire - the route resolves every price
       const invoiceRequest: CreateInvoiceRequest = {
+        blackFriday: reviewedBlackFriday,
         items: resolvedCart.lines.map(({ line }) => ({
           certificateId: line.certificateId,
           variantId: line.variantId,
@@ -480,6 +485,7 @@ export default function CheckoutOverlay({
         );
       }
     } catch (error) {
+      if (error instanceof CartPricesChangedError) router.refresh();
       console.error("Payment creation failed:", error);
       track("payment_error", { amount: resolvedCart.total });
       setIsSubmitting(false);
@@ -502,7 +508,7 @@ export default function CheckoutOverlay({
         : SCREEN_COPY.payment;
 
   const visualProps = featured
-    ? getVisualProps(featured.certificate, featured.variantTitle, featured.hasStickerArea)
+    ? getVisualProps(featured.certificate, featured.variantTitle, featured.hasStickerArea, blackFriday)
     : null;
 
   return (
@@ -571,8 +577,6 @@ export default function CheckoutOverlay({
                         "w-full h-full absolute inset-0 transform-none!",
                         visualProps.className
                       )}
-                      imageSrc={CERTIFICATE_IMAGE}
-                      isDark={CERTIFICATE_IMAGE_DARK_OVERLAY}
                       stickers={featured.hasStickerArea ? featured.stickers : undefined}
                     />
                   </div>
@@ -639,6 +643,11 @@ export default function CheckoutOverlay({
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.25, ease: "easeOut" }}
                     >
+                      {pricesChanged && (
+                        <p role="alert" className="mb-4 text-sm font-medium text-amber-800 dark:text-amber-300">
+                          Ціни сертифікатів змінилися. Перевірте оновлену суму в кошику.
+                        </p>
+                      )}
                       {activeScreen === "product" && configuredOrder ? (
                         <AddonsStep
                           available={availableAddons}
@@ -775,6 +784,12 @@ export default function CheckoutOverlay({
                                       : deliveryLabel(watchedDeliveryMethod)
                                 }
                               />
+
+                              {blackFriday && (
+                                <p className="text-sm text-stone-600 dark:text-stone-300">
+                                  Акційна BFCard діє 6 місяців з дати оплати.
+                                </p>
+                              )}
 
                               {/* Submit Error */}
                               <AnimatePresence>

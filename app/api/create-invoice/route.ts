@@ -12,6 +12,7 @@ import {
   withDeliveryDescription,
 } from "@/lib/delivery";
 import { callService, serviceApiKey } from "@/lib/payment-service";
+import { BLACK_FRIDAY_LABEL, blackFridaySchedule } from "@/lib/black-friday";
 import { UA_PHONE_API_REGEX } from "@/lib/phone";
 import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
 import { buildReceiptLines, receiptTotalKop } from "@/lib/receipt";
@@ -78,6 +79,8 @@ const requestSchema = z.object({
   name: z.string().trim().min(2).max(100),
   phone: z.string().regex(UA_PHONE_API_REGEX),
   delivery: deliverySchema.optional(),
+  // Browsers from before the campaign displayed standard pricing.
+  blackFriday: z.boolean().default(false),
 });
 
 function errorResponse(message: string, status: number, headers?: HeadersInit) {
@@ -157,7 +160,17 @@ export async function POST(req: NextRequest) {
     return errorResponse("Payment service is not configured", 500);
   }
 
-  const cart = resolveCart(lines);
+  const { active: blackFriday } = blackFridaySchedule();
+  if (parsed.data.blackFriday !== blackFriday) {
+    return NextResponse.json({
+      error: {
+        code: "CART_PRICES_CHANGED",
+        message: "Ціни сертифікатів змінилися. Оновіть сторінку й перевірте нову суму перед оплатою.",
+      },
+    }, { status: 409 });
+  }
+
+  const cart = resolveCart(lines, blackFriday);
   if (cart.lines.length !== lines.length || cart.total <= 0) {
     return errorResponse("Invalid order", 400);
   }
@@ -201,6 +214,10 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  const orderDescription = blackFriday
+    ? `${BLACK_FRIDAY_LABEL} · 6 місяців. ${cart.description}`
+    : cart.description;
+
   const result = await callService<{
     invoiceUrl?: string;
     orderReference?: string;
@@ -209,7 +226,7 @@ export async function POST(req: NextRequest) {
     method: "POST",
     body: {
       amount: cart.total,
-      orderDescription: withDeliveryDescription(cart.description, delivery),
+      orderDescription: withDeliveryDescription(orderDescription, delivery),
       name,
       phone,
       userId,
