@@ -63,7 +63,6 @@ beforeEach(() => {
   fetchMock.mockReset();
   vi.stubGlobal("fetch", fetchMock);
   vi.stubEnv("PAYMENT_SERVICE_API_KEY", "test-key");
-  vi.stubEnv("BF_BLACK_FRIDAY_2026_EXTENDED", "false");
 });
 
 afterEach(() => {
@@ -158,7 +157,7 @@ describe("POST /api/create-invoice - price resolution", () => {
     const items = [{ certificateId: 1, variantId: "basic" }];
     vi.setSystemTime(new Date("2026-11-23T08:00:00+02:00"));
     expect((await POST(makeRequest({ ...buyer, items }))).status).toBe(409);
-    vi.setSystemTime(new Date("2026-11-28T00:00:00+02:00"));
+    vi.setSystemTime(new Date("2026-11-28T20:00:00+02:00"));
     expect((await POST(makeRequest({ ...buyer, items, blackFriday: true }))).status).toBe(409);
     expect(fetchMock).not.toHaveBeenCalled();
 

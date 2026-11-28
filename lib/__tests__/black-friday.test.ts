@@ -5,15 +5,21 @@ import { resolvePrice } from "@/lib/pricing";
 
 describe("Black Friday 2026 in Kyiv", () => {
   it.each([
-    ["2026-11-23T07:59:59+02:00", false, false],
-    ["2026-11-23T08:00:00+02:00", false, true],
-    ["2026-11-27T23:59:59+02:00", false, true],
-    ["2026-11-28T00:00:00+02:00", false, false],
-    ["2026-11-28T00:00:00+02:00", true, true],
-    ["2026-11-29T07:59:59+02:00", true, true],
-    ["2026-11-29T08:00:00+02:00", true, false],
-  ] as const)("at %s, extended=%s, active=%s", (time, extended, expected) => {
-    expect(blackFridaySchedule(Date.parse(time), extended).active).toBe(expected);
+    ["2026-11-23T07:59:59+02:00", false],
+    ["2026-11-23T08:00:00+02:00", true],
+    ["2026-11-28T00:00:00+02:00", true],
+    ["2026-11-28T19:59:59+02:00", true],
+    ["2026-11-28T20:00:00+02:00", false],
+    ["2026-11-29T08:00:00+02:00", false],
+  ] as const)("at %s active=%s", (time, expected) => {
+    expect(blackFridaySchedule(Date.parse(time)).active).toBe(expected);
+  });
+
+  it("refreshes open pages exactly at 20:00 Kyiv, and never after", () => {
+    expect(blackFridaySchedule(Date.parse("2026-11-28T19:00:00+02:00")).refreshAfterMs)
+      .toBe(60 * 60 * 1000);
+    expect(blackFridaySchedule(Date.parse("2026-11-28T20:00:00+02:00")).refreshAfterMs)
+      .toBeNull();
   });
 
   it("matches the sheet for every purchasable variant and restores the regular price", () => {
